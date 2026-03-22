@@ -91,6 +91,26 @@
     }
     .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
 
+    .install-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      height: 36px;
+      padding: 0 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .install-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+
     /* ── RESULT TOAST ── */
     .result-toast {
       position: fixed;
@@ -385,6 +405,7 @@
   <div class="divider">
     <button class="divider-btn" onclick="rollDice()">🎲</button>
     <button class="divider-btn" onclick="flipCoin()">🪙</button>
+    <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">📲 INSTALL</a>
   </div>
 
   <!-- Player 1 (bottom) -->
