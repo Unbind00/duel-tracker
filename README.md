@@ -2,6 +2,9 @@
 
 A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and halving LP, plus a dice roller and coin flip.
 
+- No ads, ever
+- Works fully offline once installed
+
 ---
 
 ## Installing on iPhone
@@ -34,13 +37,13 @@ A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and hal
 - Choose **− SUB** to subtract, **+ ADD** to add, or **½ HALF** to halve their LP
 - Enter an amount and tap **Confirm**
 - Tap **🎲** to roll a dice or **🪙** to flip a coin
-- Tap **📜** to view the game log
+- Tap **📜** to view the duel log
 - Tap **📲 INSTALL** for instructions on how to add the app to your home screen
 - Tap **↺ RESET** to restart both players at 8000 LP
 
 ---
 
-## Game Log
+## Duel Log
 
 The **📜** button in the middle of the screen opens a running log of every life point change made during the current duel. Each entry shows the player, what happened, and the resulting LP total:
 
