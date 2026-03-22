@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Life Counter" />
+  <meta name="theme-color" content="#000000" />
+  <title>Life Counter</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --p1: #ff4444;
+      --p2: #3399ff;
+      --bg: #0a0a0a;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: 'Share Tech Mono', monospace;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      width: 100%;
+    }
+
+    .panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      gap: 10px;
+    }
+
+    .panel.p1 { background: linear-gradient(to top, rgba(255,68,68,0.10), transparent); }
+    .panel.p2 {
+      background: linear-gradient(to bottom, rgba(51,153,255,0.10), transparent);
+      transform: rotate(180deg);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      position: relative;
+      height: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .divider-icon {
+      background: var(--bg);
+      padding: 0 10px;
+      font-size: 20px;
+      line-height: 1;
+      position: absolute;
+    }
+
+    /* ── PLAYER LABEL ── */
+    .player-label {
+      font-size: 11px;
+      letter-spacing: 4px;
+      opacity: 0.5;
+      text-transform: uppercase;
+    }
+    .p1 .player-label { color: var(--p1); }
+    .p2 .player-label { color: var(--p2); }
+
+    /* ── LIFE DISPLAY (tappable) ── */
+    .life-btn {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: transform 0.12s ease, background 0.12s ease;
+      width: 240px;
+    }
+    .life-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.07); }
+
+    .life-number {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 72px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+      transition: color 0.3s;
+      letter-spacing: -1px;
+    }
+    .life-number.dead { color: #555; }
+
+    .life-hint {
+      font-size: 9px;
+      letter-spacing: 3px;
+      opacity: 0.35;
+      color: #fff;
+    }
+
+    .p1 .life-btn { border-color: rgba(255,68,68,0.25); }
+    .p2 .life-btn { border-color: rgba(51,153,255,0.25); }
+
+    /* ── DEFEATED TAG ── */
+    .defeated {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #ff4444;
+      opacity: 0.7;
+      display: none;
+    }
+    .defeated.visible { display: block; }
+
+    /* ── RESET BUTTON ── */
+    .reset-wrap {
+      position: absolute;
+      bottom: env(safe-area-inset-bottom, 12px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .reset-btn {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      color: rgba(255,255,255,0.3);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .reset-btn:active { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
+
+    /* ── MODAL OVERLAY ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .sheet {
+      background: #141414;
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      padding: 20px 24px calc(env(safe-area-inset-bottom, 16px) + 20px);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .overlay.open .sheet { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .sheet-title-label {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 4px;
+      opacity: 0.5;
+      margin-bottom: 2px;
+    }
+    .sheet-title {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    /* ── MODE TOGGLE ── */
+    .mode-toggle {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 18px;
+      gap: 4px;
+    }
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 9px;
+      border: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      background: transparent;
+      color: rgba(255,255,255,0.35);
+    }
+    .mode-btn.active-sub {
+      background: #ff4444;
+      color: #000;
+    }
+    .mode-btn.active-add {
+      background: #33dd66;
+      color: #000;
+    }
+
+    /* ── INPUT ROW ── */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 14px;
+      padding: 10px 18px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .input-sign {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
+      transition: color 0.18s;
+    }
+    .sign-sub { color: #ff4444; }
+    .sign-add { color: #33dd66; }
+
+    #amount-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 44px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      caret-color: rgba(255,255,255,0.5);
+      -webkit-appearance: none;
+    }
+
+    /* ── PREVIEW ── */
+    .preview {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 18px;
+      height: 18px;
+      letter-spacing: 1px;
+    }
+
+    /* ── CONFIRM BUTTON ── */
+    .confirm-btn {
+      width: 100%;
+      padding: 16px;
+      border-radius: 14px;
+      border: none;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      letter-spacing: 3px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.18s;
+      color: #000;
+    }
+    .confirm-btn:disabled {
+      background: rgba(255,255,255,0.1) !important;
+      color: rgba(255,255,255,0.2);
+      cursor: default;
+    }
+
+    /* ── PULSE ANIMATION ON LP CHANGE ── */
+    @keyframes pulse-red {
+      0% { text-shadow: 0 0 0px rgba(255,68,68,0); }
+      50% { text-shadow: 0 0 20px rgba(255,68,68,0.8); }
+      100% { text-shadow: 0 0 0px rgba(255,68,68,0); }
+    }
+    @keyframes pulse-blue {
+      0% { text-shadow: 0 0 0px rgba(51,153,255,0); }
+      50% { text-shadow: 0 0 20px rgba(51,153,255,0.8); }
+      100% { text-shadow: 0 0 0px rgba(51,153,255,0); }
+    }
+    .flash-p1 { animation: pulse-red 0.5s ease; }
+    .flash-p2 { animation: pulse-blue 0.5s ease; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Player 2 (top, rotated via CSS) -->
+  <div class="panel p2" id="panel-p2">
+    <span class="player-label">PLAYER 2</span>
+    <button class="life-btn" onclick="openEditor(2)">
+      <span class="life-number" id="lp2">8000</span>
+      <span class="life-hint">LP · TAP TO EDIT</span>
+    </button>
+    <span class="defeated" id="dead2">💀 DEFEATED</span>
+  </div>
+
+  <!-- Divider -->
+  <div class="divider">
+    <span class="divider-icon">⚔️</span>
+  </div>
+
+  <!-- Player 1 (bottom) -->
+  <div class="panel p1" id="panel-p1">
+    <span class="player-label">PLAYER 1</span>
+    <button class="life-btn" onclick="openEditor(1)">
+      <span class="life-number" id="lp1">8000</span>
+      <span class="life-hint">LP · TAP TO EDIT</span>
+    </button>
+    <span class="defeated" id="dead1">💀 DEFEATED</span>
+
+    <div class="reset-wrap">
+      <button class="reset-btn" onclick="resetGame()">↺ RESET</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Edit Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-label" id="sheet-player-label">PLAYER 1</div>
+    <div class="sheet-title">EDIT LIFE POINTS</div>
+
+    <div class="mode-toggle">
+      <button class="mode-btn active-sub" id="btn-sub" onclick="setMode('sub')">− SUBTRACT</button>
+      <button class="mode-btn" id="btn-add" onclick="setMode('add')">+ ADD</button>
+    </div>
+
+    <div class="input-row" id="input-row">
+      <span class="input-sign sign-sub" id="input-sign">−</span>
+      <input id="amount-input" type="number" inputmode="numeric" min="0" placeholder="0"
+             oninput="updatePreview()" />
+    </div>
+
+    <div class="preview" id="preview"></div>
+
+    <button class="confirm-btn" id="confirm-btn" onclick="confirmEdit()" disabled>CONFIRM</button>
+  </div>
+</div>
+
+<script>
+  // ── STATE ──
+  let lp = { 1: 8000, 2: 8000 };
+  let activePlayer = 1;
+  let mode = 'sub'; // 'add' | 'sub'
+
+  // ── ACCENT COLORS ──
+  const colors = { 1: '#ff4444', 2: '#3399ff' };
+
+  // ── OPEN EDITOR ──
+  function openEditor(player) {
+    activePlayer = player;
+    document.getElementById('sheet-player-label').textContent = `PLAYER ${player}`;
+    document.getElementById('amount-input').value = '';
+    document.getElementById('preview').textContent = '';
+    document.getElementById('confirm-btn').disabled = true;
+    setMode('sub');
+
+    // Accent color
+    const c = colors[player];
+    document.getElementById('confirm-btn').style.background = c;
+    document.getElementById('input-row').style.borderColor = c + '55';
+
+    document.getElementById('overlay').classList.add('open');
+    setTimeout(() => document.getElementById('amount-input').focus(), 300);
+  }
+
+  function closeEditor() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('amount-input').blur();
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeEditor();
+  }
+
+  // ── MODE TOGGLE ──
+  function setMode(m) {
+    mode = m;
+    const btnSub = document.getElementById('btn-sub');
+    const btnAdd = document.getElementById('btn-add');
+    const sign = document.getElementById('input-sign');
+
+    btnSub.className = 'mode-btn' + (m === 'sub' ? ' active-sub' : '');
+    btnAdd.className = 'mode-btn' + (m === 'add' ? ' active-add' : '');
+    sign.textContent = m === 'sub' ? '−' : '+';
+    sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
+    updatePreview();
+  }
+
+  // ── PREVIEW ──
+  function updatePreview() {
+    const raw = document.getElementById('amount-input').value;
+    const val = parseInt(raw, 10);
+    const confirmBtn = document.getElementById('confirm-btn');
+
+    if (!raw || isNaN(val) || val < 0) {
+      document.getElementById('preview').textContent = '';
+      confirmBtn.disabled = true;
+      return;
+    }
+
+    const current = lp[activePlayer];
+    const result = mode === 'add' ? current + val : current - val;
+    document.getElementById('preview').textContent = `${current}  →  ${result}`;
+    confirmBtn.disabled = false;
+  }
+
+  // ── CONFIRM ──
+  function confirmEdit() {
+    const val = parseInt(document.getElementById('amount-input').value, 10);
+    if (isNaN(val)) return;
+
+    lp[activePlayer] = mode === 'add'
+      ? lp[activePlayer] + val
+      : lp[activePlayer] - val;
+
+    renderLP(activePlayer);
+    closeEditor();
+  }
+
+  // ── RENDER ──
+  function renderLP(player) {
+    const el = document.getElementById(`lp${player}`);
+    const deadEl = document.getElementById(`dead${player}`);
+    el.textContent = lp[player].toLocaleString();
+
+    if (lp[player] <= 0) {
+      el.classList.add('dead');
+      deadEl.classList.add('visible');
+    } else {
+      el.classList.remove('dead');
+      deadEl.classList.remove('visible');
+    }
+
+    // Flash animation
+    el.classList.remove(`flash-p1`, `flash-p2`);
+    void el.offsetWidth; // reflow
+    el.classList.add(`flash-p${player}`);
+  }
+
+  // ── RESET ──
+  function resetGame() {
+    lp[1] = 8000;
+    lp[2] = 8000;
+    renderLP(1);
+    renderLP(2);
+  }
+
+  // ── KEYBOARD: Enter to confirm ──
+  document.getElementById('amount-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (!document.getElementById('confirm-btn').disabled) confirmEdit();
+    }
+  });
+
+  // ── SERVICE WORKER ──
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
