@@ -39,6 +39,7 @@
       transition: background 0.15s, transform 0.1s; line-height: 1;
     }
     .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
+    .divider-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.10); flex-shrink: 0; }
     .install-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px; height: 36px; padding: 0 10px;
@@ -47,8 +48,14 @@
       gap: 5px; text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap;
     }
     .install-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
-    .divider-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.10); flex-shrink: 0; }
 
+    /* TOAST */
+    .toast-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .toast-overlay.show { opacity: 1; pointer-events: all; }
     .result-toast {
       background: #1c1c1c; border: 1px solid rgba(255,255,255,0.12);
       border-radius: 22px; padding: 32px 48px; text-align: center;
@@ -57,13 +64,6 @@
     .toast-overlay.show .result-toast { transform: scale(1); }
     .result-emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
     .result-label { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; color: #fff; letter-spacing: 3px; }
-    .result-type { font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.3); margin-top: 8px; }
-    .toast-overlay {
-      position: fixed; inset: 0; z-index: 200;
-      display: flex; align-items: center; justify-content: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
-    }
-    .toast-overlay.show { opacity: 1; pointer-events: all; }
 
     .player-label { font-size: 11px; letter-spacing: 4px; opacity: 0.5; text-transform: uppercase; }
     .p1 .player-label { color: var(--p1); }
@@ -222,14 +222,15 @@
   </div>
 </div>
 
+<!-- Toast (tap outside to close) -->
 <div class="toast-overlay" id="toast-overlay" onclick="hideToast()">
-  <div class="result-toast" id="result-toast">
+  <div class="result-toast">
     <div class="result-emoji" id="result-emoji">&#x1F3B2;</div>
-    <div class="result-label" id="result-label">6</div>
-    <div class="result-type" id="result-type"></div>
+    <div class="result-label" id="result-label"></div>
   </div>
 </div>
 
+<!-- Edit Sheet -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -249,6 +250,7 @@
   </div>
 </div>
 
+<!-- Duel Log Sheet -->
 <div class="log-overlay" id="log-overlay" onclick="handleLogOverlayClick(event)">
   <div class="log-sheet">
     <div class="log-header">
@@ -404,22 +406,21 @@
     if (e.target === document.getElementById('log-overlay')) closeLog();
   }
 
-  var DICE_FACES = ['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'];
   function rollDice() {
+    var faces = ['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'];
     var n = Math.floor(Math.random() * 6) + 1;
-    showToast(DICE_FACES[n - 1], 'ROLLED A ' + n, 'DICE ROLL');
+    showToast('\uD83C\uDFB2', 'ROLLED A ' + n);
   }
 
   function flipCoin() {
     var heads = Math.random() < 0.5;
-    showToast(heads ? '\uD83C\uDF15' : '\uD83C\uDF11', heads ? 'HEADS' : 'TAILS', 'COIN FLIP');
+    showToast(heads ? '\uD83C\uDF15' : '\uD83C\uDF11', heads ? 'FLIPPED HEADS' : 'FLIPPED TAILS');
   }
 
   var toastTimer = null;
-  function showToast(emoji, label, type) {
+  function showToast(emoji, label) {
     document.getElementById('result-emoji').textContent = emoji;
     document.getElementById('result-label').textContent = label;
-    document.getElementById('result-type').textContent  = type;
     document.getElementById('toast-overlay').classList.add('show');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(hideToast, 3500);
