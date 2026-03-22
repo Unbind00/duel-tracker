@@ -18,7 +18,7 @@
 
     :root {
       --p1: #00c9b1;
-      --p2: #9b5de5;
+      --p2: #9b59ff;
       --bg: #0a0a0a;
       --surface: rgba(255,255,255,0.04);
       --border: rgba(255,255,255,0.08);
@@ -56,97 +56,94 @@
 
     .panel.p1 { background: linear-gradient(to top, rgba(0,201,177,0.10), transparent); }
     .panel.p2 {
-      background: linear-gradient(to bottom, rgba(155,93,229,0.10), transparent);
+      background: linear-gradient(to bottom, rgba(155,89,255,0.10), transparent);
       transform: rotate(180deg);
     }
 
     /* ── DIVIDER ── */
     .divider {
       position: relative;
-      height: 52px;
-      background: #0f0f0f;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      border-bottom: 1px solid rgba(255,255,255,0.07);
+      height: 48px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 0;
       z-index: 10;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
     .divider-btn {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      width: 44px;
-      height: 36px;
-      font-size: 20px;
+      background: transparent;
+      border: none;
+      font-size: 22px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.15s, transform 0.1s;
+      padding: 6px 18px;
+      border-radius: 10px;
+      transition: background 0.15s, transform 0.12s;
       line-height: 1;
+      position: relative;
     }
-    .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
+    .divider-btn:active { transform: scale(0.88); background: rgba(255,255,255,0.06); }
 
-    .install-btn {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      height: 36px;
-      padding: 0 12px;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.35);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
+    .divider-sep {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
     }
-    .install-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
 
-    /* ── RESULT TOAST ── */
-    .result-toast {
+    /* ── RESULT POPUP ── */
+    .result-popup {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.85);
-      background: #1c1c1c;
+      transform: translate(-50%, -50%) scale(0.7);
+      background: #181818;
       border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 22px;
-      padding: 32px 48px;
+      border-radius: 20px;
+      padding: 28px 40px;
       text-align: center;
       z-index: 200;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      min-width: 200px;
+      min-width: 180px;
     }
-    .result-toast.show {
+    .result-popup.show {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1);
       pointer-events: all;
     }
-    .result-emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
+    .result-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
     .result-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 4px;
+    }
+    .result-value {
       font-family: 'Rajdhani', sans-serif;
       font-size: 32px;
       font-weight: 700;
       color: #fff;
-      letter-spacing: 3px;
+      letter-spacing: 1px;
     }
-    .result-type {
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.3);
-      margin-top: 8px;
+    .result-dismiss {
+      margin-top: 14px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,0.2);
     }
+
+    .popup-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 199;
+      display: none;
+    }
+    .popup-backdrop.show { display: block; }
 
     /* ── PLAYER LABEL ── */
     .player-label {
@@ -193,9 +190,8 @@
     }
 
     .p1 .life-btn { border-color: rgba(0,201,177,0.25); }
-    .p2 .life-btn { border-color: rgba(155,93,229,0.25); }
+    .p2 .life-btn { border-color: rgba(155,89,255,0.25); }
 
-    /* ── DEFEATED ── */
     .defeated {
       font-size: 10px;
       letter-spacing: 3px;
@@ -226,7 +222,7 @@
     }
     .reset-btn:active { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
 
-    /* ── OVERLAY / SHEET ── */
+    /* ── MODAL ── */
     .overlay {
       position: fixed;
       inset: 0;
@@ -278,7 +274,7 @@
       letter-spacing: 1px;
     }
 
-    /* ── MODE TOGGLE ── */
+    /* ── MODE TOGGLE (now 3 buttons) ── */
     .mode-toggle {
       display: flex;
       background: rgba(255,255,255,0.05);
@@ -289,20 +285,21 @@
     }
     .mode-btn {
       flex: 1;
-      padding: 8px 2px;
+      padding: 10px 4px;
       border-radius: 9px;
       border: none;
       font-family: 'Share Tech Mono', monospace;
       font-size: 11px;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
       cursor: pointer;
       transition: all 0.18s ease;
       background: transparent;
       color: rgba(255,255,255,0.35);
+      white-space: nowrap;
     }
-    .mode-btn.active-sub  { background: #ff5566; color: #000; }
+    .mode-btn.active-sub  { background: #ff4444; color: #000; }
     .mode-btn.active-add  { background: #33dd66; color: #000; }
-    .mode-btn.active-half { background: #f0a500; color: #000; }
+    .mode-btn.active-half { background: #ffbb00; color: #000; }
 
     /* ── INPUT ROW ── */
     .input-row {
@@ -315,8 +312,6 @@
       margin-bottom: 12px;
       border: 1px solid rgba(255,255,255,0.08);
     }
-    .input-row.hidden { display: none; }
-
     .input-sign {
       font-family: 'Rajdhani', sans-serif;
       font-size: 32px;
@@ -326,9 +321,9 @@
       flex-shrink: 0;
       transition: color 0.18s;
     }
-    .sign-sub  { color: #ff5566; }
+    .sign-sub  { color: #ff4444; }
     .sign-add  { color: #33dd66; }
-    .sign-half { color: #f0a500; font-size: 22px; }
+    .sign-half { color: #ffbb00; font-size: 22px; }
 
     #amount-input {
       flex: 1;
@@ -343,6 +338,7 @@
       caret-color: rgba(255,255,255,0.5);
       -webkit-appearance: none;
     }
+    #amount-input:disabled { opacity: 0.3; }
 
     .preview {
       text-align: center;
@@ -361,7 +357,6 @@
       font-family: 'Share Tech Mono', monospace;
       font-size: 13px;
       letter-spacing: 3px;
-      font-weight: 700;
       cursor: pointer;
       transition: all 0.18s;
       color: #000;
@@ -372,21 +367,28 @@
       cursor: default;
     }
 
-    /* ── FLASH ANIMATIONS ── */
+    /* ── ANIMATIONS ── */
     @keyframes pulse-teal {
       0%   { text-shadow: 0 0 0px rgba(0,201,177,0); }
-      50%  { text-shadow: 0 0 24px rgba(0,201,177,0.9); }
+      50%  { text-shadow: 0 0 20px rgba(0,201,177,0.9); }
       100% { text-shadow: 0 0 0px rgba(0,201,177,0); }
     }
     @keyframes pulse-purple {
-      0%   { text-shadow: 0 0 0px rgba(155,93,229,0); }
-      50%  { text-shadow: 0 0 24px rgba(155,93,229,0.9); }
-      100% { text-shadow: 0 0 0px rgba(155,93,229,0); }
+      0%   { text-shadow: 0 0 0px rgba(155,89,255,0); }
+      50%  { text-shadow: 0 0 20px rgba(155,89,255,0.9); }
+      100% { text-shadow: 0 0 0px rgba(155,89,255,0); }
     }
     .flash-p1 { animation: pulse-teal   0.5s ease; }
     .flash-p2 { animation: pulse-purple 0.5s ease; }
 
-    /* ── LOG SHEET ── */
+    @keyframes dice-spin {
+      0%   { transform: translate(-50%,-50%) scale(0.5) rotate(-20deg); opacity:0; }
+      60%  { transform: translate(-50%,-50%) scale(1.1) rotate(5deg);  opacity:1; }
+      100% { transform: translate(-50%,-50%) scale(1)   rotate(0deg);  opacity:1; }
+    }
+    .result-popup.show { animation: dice-spin 0.28s ease forwards; }
+
+    /* ── GAME LOG ── */
     .log-overlay {
       position: fixed;
       inset: 0;
@@ -434,7 +436,6 @@
       color: #fff;
       letter-spacing: 1px;
     }
-
     .log-list {
       overflow-y: auto;
       flex: 1;
@@ -457,24 +458,12 @@
       letter-spacing: 0.5px;
     }
     .log-entry:last-child { border-bottom: none; }
-
-    .log-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
+    .log-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .log-dot.sub  { background: #ff5566; }
     .log-dot.add  { background: #33dd66; }
     .log-dot.half { background: #ff5566; }
-
-    .log-player {
-      color: rgba(255,255,255,0.5);
-      flex-shrink: 0;
-      min-width: 68px;
-    }
+    .log-player { color: rgba(255,255,255,0.5); flex-shrink: 0; min-width: 68px; }
     .log-arrow { color: rgba(255,255,255,0.2); flex-shrink: 0; }
-
     .log-change {
       font-family: 'Rajdhani', sans-serif;
       font-size: 15px;
@@ -485,7 +474,6 @@
     .log-change.sub  { color: #ff5566; }
     .log-change.add  { color: #33dd66; }
     .log-change.half { color: #ff5566; }
-
     .log-result {
       font-family: 'Rajdhani', sans-serif;
       font-size: 15px;
@@ -509,12 +497,12 @@
     <span class="defeated" id="dead2">💀 DEFEATED</span>
   </div>
 
-  <!-- Divider -->
+  <!-- Divider with dice + coin -->
   <div class="divider">
-    <button class="divider-btn" onclick="rollDice()">🎲</button>
-    <button class="divider-btn" onclick="flipCoin()">🪙</button>
     <button class="divider-btn" onclick="openLog()">📜</button>
-    <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">📲 INSTALL</a>
+    <button class="divider-btn" onclick="rollDice()" title="Roll dice">🎲</button>
+    <div class="divider-sep"></div>
+    <button class="divider-btn" onclick="flipCoin()" title="Flip coin">🪙</button>
   </div>
 
   <!-- Player 1 (bottom) -->
@@ -530,27 +518,28 @@
       <button class="reset-btn" onclick="resetGame()">↺ RESET</button>
     </div>
   </div>
-
 </div>
 
-<!-- Dice / Coin Result Toast -->
-<div class="result-toast" id="result-toast" onclick="hideToast()">
-  <div class="result-emoji" id="result-emoji">🎲</div>
-  <div class="result-label" id="result-label">6</div>
-  <div class="result-type" id="result-type">DICE ROLL · TAP TO DISMISS</div>
+<!-- Dice/Coin Result Popup -->
+<div class="popup-backdrop" id="popup-backdrop" onclick="dismissPopup()"></div>
+<div class="result-popup" id="result-popup">
+  <div class="result-emoji" id="result-emoji"></div>
+  <div class="result-label" id="result-label"></div>
+  <div class="result-value" id="result-value"></div>
+  <div class="result-dismiss">TAP TO DISMISS</div>
 </div>
 
-<!-- Edit Sheet -->
+<!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
-  <div class="sheet">
+  <div class="sheet" id="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title-label" id="sheet-player-label">PLAYER 1</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
 
     <div class="mode-toggle">
-      <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">− SUB</button>
+      <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">− SUBTRACT</button>
       <button class="mode-btn"             id="btn-add"  onclick="setMode('add')">+ ADD</button>
-      <button class="mode-btn"             id="btn-half" onclick="setMode('half')">½ HALF</button>
+      <button class="mode-btn"             id="btn-half" onclick="setMode('half')">÷2 HALVE</button>
     </div>
 
     <div class="input-row" id="input-row">
@@ -570,8 +559,36 @@
   let gameLog = [];
   let activePlayer = 1;
   let mode = 'sub';
-  const colors = { 1: '#00c9b1', 2: '#9b5de5' };
 
+  const colors = { 1: '#00c9b1', 2: '#9b59ff' };
+
+  // ── DICE & COIN ──
+  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+
+  function rollDice() {
+    const roll = Math.floor(Math.random() * 6) + 1;
+    showResult('🎲', 'YOU ROLLED', DICE_FACES[roll - 1] + '  ' + roll);
+  }
+
+  function flipCoin() {
+    const heads = Math.random() < 0.5;
+    showResult(heads ? '🌕' : '🌑', 'COIN FLIP', heads ? 'HEADS' : 'TAILS');
+  }
+
+  function showResult(emoji, label, value) {
+    document.getElementById('result-emoji').textContent = emoji;
+    document.getElementById('result-label').textContent = label;
+    document.getElementById('result-value').textContent = value;
+    document.getElementById('result-popup').classList.add('show');
+    document.getElementById('popup-backdrop').classList.add('show');
+  }
+
+  function dismissPopup() {
+    document.getElementById('result-popup').classList.remove('show');
+    document.getElementById('popup-backdrop').classList.remove('show');
+  }
+
+  // ── EDITOR ──
   function openEditor(player) {
     activePlayer = player;
     document.getElementById('sheet-player-label').textContent = `PLAYER ${player}`;
@@ -579,9 +596,11 @@
     document.getElementById('preview').textContent = '';
     document.getElementById('confirm-btn').disabled = true;
     setMode('sub');
+
     const c = colors[player];
     document.getElementById('confirm-btn').style.background = c;
     document.getElementById('input-row').style.borderColor = c + '55';
+
     document.getElementById('overlay').classList.add('open');
     setTimeout(() => document.getElementById('amount-input').focus(), 300);
   }
@@ -595,49 +614,57 @@
     if (e.target === document.getElementById('overlay')) closeEditor();
   }
 
+  // ── MODE ──
   function setMode(m) {
     mode = m;
-    document.getElementById('btn-sub').className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
-    document.getElementById('btn-add').className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
-    document.getElementById('btn-half').className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
+    const input = document.getElementById('amount-input');
+    const sign  = document.getElementById('input-sign');
+    const btnSub  = document.getElementById('btn-sub');
+    const btnAdd  = document.getElementById('btn-add');
+    const btnHalf = document.getElementById('btn-half');
 
-    const sign     = document.getElementById('input-sign');
-    const inputRow = document.getElementById('input-row');
-    const confirmBtn = document.getElementById('confirm-btn');
+    btnSub.className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
+    btnAdd.className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
+    btnHalf.className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
 
     if (m === 'half') {
-      inputRow.classList.add('hidden');
-      sign.textContent = '½';
+      sign.textContent = '÷2';
       sign.className = 'input-sign sign-half';
+      input.value = '';
+      input.disabled = true;
+      // auto-preview halve
       const result = Math.floor(lp[activePlayer] / 2);
-      document.getElementById('preview').textContent = `${lp[activePlayer].toLocaleString()}  →  ${result.toLocaleString()}`;
-      confirmBtn.disabled = false;
-      confirmBtn.style.background = '#f0a500';
+      document.getElementById('preview').textContent = `${lp[activePlayer]}  →  ${result}`;
+      document.getElementById('confirm-btn').disabled = false;
     } else {
-      inputRow.classList.remove('hidden');
       sign.textContent = m === 'sub' ? '−' : '+';
       sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
-      confirmBtn.style.background = colors[activePlayer];
+      input.disabled = false;
+      input.focus();
       updatePreview();
     }
   }
 
+  // ── PREVIEW ──
   function updatePreview() {
     if (mode === 'half') return;
     const raw = document.getElementById('amount-input').value;
     const val = parseInt(raw, 10);
     const confirmBtn = document.getElementById('confirm-btn');
+
     if (!raw || isNaN(val) || val < 0) {
       document.getElementById('preview').textContent = '';
       confirmBtn.disabled = true;
       return;
     }
+
     const current = lp[activePlayer];
     const result = mode === 'add' ? current + val : current - val;
-    document.getElementById('preview').textContent = `${current.toLocaleString()}  →  ${result.toLocaleString()}`;
+    document.getElementById('preview').textContent = `${current}  →  ${result}`;
     confirmBtn.disabled = false;
   }
 
+  // ── CONFIRM ──
   function confirmEdit() {
     if (mode === 'half') {
       const prev = lp[activePlayer];
@@ -653,10 +680,56 @@
     closeEditor();
   }
 
+
+  // ── GAME LOG ──
+  function addLogEntry(player, type, change, result) {
+    gameLog.push({ player, type, change, result });
+    renderLog();
+  }
+
+  function renderLog() {
+    const list = document.getElementById('log-list');
+    const empty = document.getElementById('log-empty');
+    list.querySelectorAll('.log-entry').forEach(e => e.remove());
+    if (gameLog.length === 0) {
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    [...gameLog].reverse().forEach(entry => {
+      const changeStr = entry.type === 'half'
+        ? '÷2'
+        : (entry.type === 'add' ? '+' : '-') + entry.change.toLocaleString();
+      const div = document.createElement('div');
+      div.className = 'log-entry';
+      div.innerHTML = `
+        <span class="log-dot ${entry.type}"></span>
+        <span class="log-player">Player ${entry.player}</span>
+        <span class="log-arrow">→</span>
+        <span class="log-change ${entry.type}">${changeStr}</span>
+        <span class="log-arrow">→</span>
+        <span class="log-result">${entry.result.toLocaleString()}</span>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function openLog() {
+    document.getElementById('log-overlay').classList.add('open');
+  }
+  function closeLog() {
+    document.getElementById('log-overlay').classList.remove('open');
+  }
+  function handleLogOverlayClick(e) {
+    if (e.target === document.getElementById('log-overlay')) closeLog();
+  }
+
+  // ── RENDER ──
   function renderLP(player) {
-    const el     = document.getElementById(`lp${player}`);
+    const el    = document.getElementById(`lp${player}`);
     const deadEl = document.getElementById(`dead${player}`);
     el.textContent = lp[player].toLocaleString();
+
     if (lp[player] <= 0) {
       el.classList.add('dead');
       deadEl.classList.add('visible');
@@ -664,11 +737,13 @@
       el.classList.remove('dead');
       deadEl.classList.remove('visible');
     }
+
     el.classList.remove('flash-p1', 'flash-p2');
     void el.offsetWidth;
     el.classList.add(`flash-p${player}`);
   }
 
+  // ── RESET ──
   function resetGame() {
     lp[1] = 8000; lp[2] = 8000;
     gameLog = [];
@@ -676,34 +751,7 @@
     renderLP(1); renderLP(2);
   }
 
-  // ── DICE ──
-  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-  function rollDice() {
-    const n = Math.floor(Math.random() * 6) + 1;
-    showToast(DICE_FACES[n - 1], `ROLLED A ${n}`, 'DICE ROLL');
-  }
-
-  // ── COIN ──
-  function flipCoin() {
-    const heads = Math.random() < 0.5;
-    showToast(heads ? '🌕' : '🌑', heads ? 'HEADS' : 'TAILS', 'COIN FLIP');
-  }
-
-  // ── TOAST ──
-  let toastTimer = null;
-  function showToast(emoji, label, type) {
-    document.getElementById('result-emoji').textContent = emoji;
-    document.getElementById('result-label').textContent = label;
-    document.getElementById('result-type').textContent  = type + ' · TAP TO DISMISS';
-    document.getElementById('result-toast').classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(hideToast, 3500);
-  }
-  function hideToast() {
-    document.getElementById('result-toast').classList.remove('show');
-    clearTimeout(toastTimer);
-  }
-
+  // ── ENTER KEY ──
   document.getElementById('amount-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && !document.getElementById('confirm-btn').disabled) confirmEdit();
   });
@@ -713,7 +761,7 @@
   }
 </script>
 
-<!-- Log Sheet -->
+<!-- Game Log Sheet -->
 <div class="log-overlay" id="log-overlay" onclick="handleLogOverlayClick(event)">
   <div class="log-sheet">
     <div class="log-header">
@@ -725,6 +773,5 @@
     </div>
   </div>
 </div>
-
 </body>
 </html>
