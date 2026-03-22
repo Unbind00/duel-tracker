@@ -10,758 +10,240 @@
   <title>Duel Tracker</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.png" />
-
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@600;700&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --p1: #00c9b1;
-      --p2: #9b59ff;
-      --bg: #0a0a0a;
-      --surface: rgba(255,255,255,0.04);
-      --border: rgba(255,255,255,0.08);
-    }
-
+    :root { --p1: #00c9b1; --p2: #9b5de5; --bg: #0a0a0a; }
     html, body {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      background: var(--bg);
-      font-family: 'Share Tech Mono', monospace;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      -webkit-user-select: none;
-      user-select: none;
+      height: 100%; width: 100%; overflow: hidden; background: var(--bg);
+      font-family: 'Share Tech Mono', monospace; touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none;
     }
-
-    #app {
-      display: flex;
-      flex-direction: column;
-      height: 100dvh;
-      width: 100%;
-    }
-
+    #app { display: flex; flex-direction: column; height: 100dvh; width: 100%; }
     .panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      gap: 10px;
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; position: relative; overflow: hidden; gap: 10px;
     }
-
     .panel.p1 { background: linear-gradient(to top, rgba(0,201,177,0.10), transparent); }
-    .panel.p2 {
-      background: linear-gradient(to bottom, rgba(155,89,255,0.10), transparent);
-      transform: rotate(180deg);
-    }
+    .panel.p2 { background: linear-gradient(to bottom, rgba(155,93,229,0.10), transparent); transform: rotate(180deg); }
 
-    /* ── DIVIDER ── */
     .divider {
-      position: relative;
-      height: 48px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      z-index: 10;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      height: 52px; background: #0f0f0f;
+      border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 12px; z-index: 10;
     }
-
     .divider-btn {
-      background: transparent;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      padding: 6px 18px;
-      border-radius: 10px;
-      transition: background 0.15s, transform 0.12s;
-      line-height: 1;
-      position: relative;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px; width: 44px; height: 36px; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, transform 0.1s; line-height: 1;
     }
-    .divider-btn:active { transform: scale(0.88); background: rgba(255,255,255,0.06); }
-
-    .divider-sep {
-      width: 1px;
-      height: 24px;
-      background: var(--border);
+    .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
+    .install-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px; height: 36px; padding: 0 10px;
+      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.35); cursor: pointer; display: flex; align-items: center;
+      gap: 5px; text-decoration: none; transition: background 0.15s, color 0.15s; white-space: nowrap;
     }
+    .install-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
+    .divider-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.10); flex-shrink: 0; }
 
-    /* ── RESULT POPUP ── */
-    .result-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.7);
-      background: #181818;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      padding: 28px 40px;
-      text-align: center;
-      z-index: 200;
-      opacity: 0;
-      pointer-events: none;
+    .result-toast {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      background: #1c1c1c; border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px; padding: 32px 48px; text-align: center;
+      z-index: 200; opacity: 0; pointer-events: none; min-width: 200px;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      min-width: 180px;
     }
-    .result-popup.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-      pointer-events: all;
-    }
-    .result-emoji { font-size: 52px; line-height: 1; margin-bottom: 10px; }
-    .result-label {
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.35);
-      margin-bottom: 4px;
-    }
-    .result-value {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 32px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-    }
-    .result-dismiss {
-      margin-top: 14px;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: rgba(255,255,255,0.2);
-    }
+    .result-toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: all; }
+    .result-emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
+    .result-label { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; color: #fff; letter-spacing: 3px; }
+    .result-type { font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.3); margin-top: 8px; }
 
-    .popup-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 199;
-      display: none;
-    }
-    .popup-backdrop.show { display: block; }
-
-    /* ── PLAYER LABEL ── */
-    .player-label {
-      font-size: 11px;
-      letter-spacing: 4px;
-      opacity: 0.5;
-      text-transform: uppercase;
-    }
+    .player-label { font-size: 11px; letter-spacing: 4px; opacity: 0.5; text-transform: uppercase; }
     .p1 .player-label { color: var(--p1); }
     .p2 .player-label { color: var(--p2); }
 
-    /* ── LIFE DISPLAY ── */
     .life-btn {
-      background: var(--surface);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px;
-      padding: 18px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px; padding: 18px 40px; display: flex; flex-direction: column;
+      align-items: center; gap: 6px; cursor: pointer; width: 240px;
       transition: transform 0.12s ease, background 0.12s ease;
-      width: 240px;
     }
     .life-btn:active { transform: scale(0.96); background: rgba(255,255,255,0.07); }
-
+    .p1 .life-btn { border-color: rgba(0,201,177,0.25); }
+    .p2 .life-btn { border-color: rgba(155,93,229,0.25); }
     .life-number {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 72px;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1;
-      transition: color 0.3s;
-      letter-spacing: -1px;
+      font-family: 'Rajdhani', sans-serif; font-size: 72px; font-weight: 700;
+      color: #fff; line-height: 1; transition: color 0.3s; letter-spacing: -1px;
     }
     .life-number.dead { color: #555; }
+    .life-hint { font-size: 9px; letter-spacing: 3px; opacity: 0.35; color: #fff; }
 
-    .life-hint {
-      font-size: 9px;
-      letter-spacing: 3px;
-      opacity: 0.35;
-      color: #fff;
-    }
-
-    .p1 .life-btn { border-color: rgba(0,201,177,0.25); }
-    .p2 .life-btn { border-color: rgba(155,89,255,0.25); }
-
-    .defeated {
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: #ff4444;
-      opacity: 0.7;
-      display: none;
-    }
+    .defeated { font-size: 10px; letter-spacing: 3px; color: #ff4444; opacity: 0.7; display: none; }
     .defeated.visible { display: block; }
 
-    /* ── RESET ── */
-    .reset-wrap {
-      position: absolute;
-      bottom: env(safe-area-inset-bottom, 12px);
-      left: 50%;
-      transform: translateX(-50%);
-    }
+    .reset-wrap { position: absolute; bottom: env(safe-area-inset-bottom, 12px); left: 50%; transform: translateX(-50%); }
     .reset-btn {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 20px;
-      color: rgba(255,255,255,0.3);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 3px;
-      padding: 6px 16px;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: transparent; border: 1px solid rgba(255,255,255,0.12); border-radius: 20px;
+      color: rgba(255,255,255,0.3); font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; padding: 6px 16px; cursor: pointer; transition: all 0.2s;
     }
     .reset-btn:active { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
 
-    /* ── MODAL ── */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 100;
-      display: flex;
-      align-items: flex-end;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
+    .overlay, .log-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      z-index: 100; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
     }
-    .overlay.open { opacity: 1; pointer-events: all; }
+    .overlay.open, .log-overlay.open { opacity: 1; pointer-events: all; }
 
     .sheet {
-      background: #141414;
-      border-radius: 24px 24px 0 0;
-      width: 100%;
+      background: #141414; border-radius: 24px 24px 0 0; width: 100%;
       padding: 20px 24px calc(env(safe-area-inset-bottom, 16px) + 20px);
-      transform: translateY(20px);
-      transition: transform 0.25s ease;
+      transform: translateY(20px); transition: transform 0.25s ease;
       border-top: 1px solid rgba(255,255,255,0.08);
     }
     .overlay.open .sheet { transform: translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 20px; }
+    .sheet-title-label { text-align: center; font-size: 10px; letter-spacing: 4px; opacity: 0.5; margin-bottom: 2px; }
+    .sheet-title { text-align: center; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 20px; letter-spacing: 1px; }
 
-    .sheet-handle {
-      width: 36px;
-      height: 4px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-      margin: 0 auto 20px;
-    }
-
-    .sheet-title-label {
-      text-align: center;
-      font-size: 10px;
-      letter-spacing: 4px;
-      opacity: 0.5;
-      margin-bottom: 2px;
-    }
-    .sheet-title {
-      text-align: center;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 20px;
-      letter-spacing: 1px;
-    }
-
-    /* ── MODE TOGGLE (now 3 buttons) ── */
-    .mode-toggle {
-      display: flex;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 18px;
-      gap: 4px;
-    }
+    .mode-toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 18px; gap: 4px; }
     .mode-btn {
-      flex: 1;
-      padding: 10px 4px;
-      border-radius: 9px;
-      border: none;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      background: transparent;
-      color: rgba(255,255,255,0.35);
-      white-space: nowrap;
+      flex: 1; padding: 8px 2px; border-radius: 9px; border: none;
+      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.5px;
+      cursor: pointer; transition: all 0.18s ease; background: transparent; color: rgba(255,255,255,0.35);
     }
-    .mode-btn.active-sub  { background: #ff4444; color: #000; }
+    .mode-btn.active-sub  { background: #ff5566; color: #000; }
     .mode-btn.active-add  { background: #33dd66; color: #000; }
-    .mode-btn.active-half { background: #ffbb00; color: #000; }
+    .mode-btn.active-half { background: #f0a500; color: #000; }
 
-    /* ── INPUT ROW ── */
     .input-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 14px;
-      padding: 10px 18px;
-      margin-bottom: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04);
+      border-radius: 14px; padding: 10px 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);
     }
-    .input-sign {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 32px;
-      font-weight: 700;
-      width: 28px;
-      text-align: center;
-      flex-shrink: 0;
-      transition: color 0.18s;
-    }
-    .sign-sub  { color: #ff4444; }
+    .input-row.hidden { display: none; }
+    .input-sign { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; width: 28px; text-align: center; flex-shrink: 0; }
+    .sign-sub  { color: #ff5566; }
     .sign-add  { color: #33dd66; }
-    .sign-half { color: #ffbb00; font-size: 22px; }
-
+    .sign-half { color: #f0a500; font-size: 18px; }
     #amount-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 44px;
-      font-weight: 700;
-      color: #fff;
-      text-align: center;
-      caret-color: rgba(255,255,255,0.5);
-      -webkit-appearance: none;
+      flex: 1; background: transparent; border: none; outline: none;
+      font-family: 'Rajdhani', sans-serif; font-size: 44px; font-weight: 700;
+      color: #fff; text-align: center; caret-color: rgba(255,255,255,0.5); -webkit-appearance: none;
     }
-    #amount-input:disabled { opacity: 0.3; }
-
-    .preview {
-      text-align: center;
-      font-size: 12px;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 18px;
-      height: 18px;
-      letter-spacing: 1px;
-    }
-
+    .preview { text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 18px; height: 18px; letter-spacing: 1px; }
     .confirm-btn {
-      width: 100%;
-      padding: 16px;
-      border-radius: 14px;
-      border: none;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 13px;
-      letter-spacing: 3px;
-      cursor: pointer;
-      transition: all 0.18s;
-      color: #000;
+      width: 100%; padding: 16px; border-radius: 14px; border: none;
+      font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 3px;
+      font-weight: 700; cursor: pointer; transition: all 0.18s; color: #000;
     }
-    .confirm-btn:disabled {
-      background: rgba(255,255,255,0.1) !important;
-      color: rgba(255,255,255,0.2);
-      cursor: default;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes pulse-teal {
-      0%   { text-shadow: 0 0 0px rgba(0,201,177,0); }
-      50%  { text-shadow: 0 0 20px rgba(0,201,177,0.9); }
-      100% { text-shadow: 0 0 0px rgba(0,201,177,0); }
-    }
-    @keyframes pulse-purple {
-      0%   { text-shadow: 0 0 0px rgba(155,89,255,0); }
-      50%  { text-shadow: 0 0 20px rgba(155,89,255,0.9); }
-      100% { text-shadow: 0 0 0px rgba(155,89,255,0); }
-    }
-    .flash-p1 { animation: pulse-teal   0.5s ease; }
-    .flash-p2 { animation: pulse-purple 0.5s ease; }
-
-    @keyframes dice-spin {
-      0%   { transform: translate(-50%,-50%) scale(0.5) rotate(-20deg); opacity:0; }
-      60%  { transform: translate(-50%,-50%) scale(1.1) rotate(5deg);  opacity:1; }
-      100% { transform: translate(-50%,-50%) scale(1)   rotate(0deg);  opacity:1; }
-    }
-    .result-popup.show { animation: dice-spin 0.28s ease forwards; }
-
-    /* ── GAME LOG ── */
-    .log-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 100;
-      display: flex;
-      align-items: flex-end;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-    .log-overlay.open { opacity: 1; pointer-events: all; }
+    .confirm-btn:disabled { background: rgba(255,255,255,0.1) !important; color: rgba(255,255,255,0.2); cursor: default; }
 
     .log-sheet {
-      background: #141414;
-      border-radius: 24px 24px 0 0;
-      width: 100%;
-      max-height: 70vh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(20px);
-      transition: transform 0.25s ease;
+      background: #141414; border-radius: 24px 24px 0 0; width: 100%;
+      max-height: 70vh; display: flex; flex-direction: column;
+      transform: translateY(20px); transition: transform 0.25s ease;
       border-top: 1px solid rgba(255,255,255,0.08);
     }
     .log-overlay.open .log-sheet { transform: translateY(0); }
-
-    .log-header {
-      padding: 20px 24px 12px;
-      flex-shrink: 0;
-    }
-    .log-handle {
-      width: 36px;
-      height: 4px;
-      background: rgba(255,255,255,0.15);
-      border-radius: 2px;
-      margin: 0 auto 20px;
-    }
-    .log-title {
-      text-align: center;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 20px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 1px;
-    }
-    .log-list {
-      overflow-y: auto;
-      flex: 1;
-      padding: 8px 24px calc(env(safe-area-inset-bottom, 16px) + 16px);
-    }
-    .log-empty {
-      text-align: center;
-      font-size: 11px;
-      letter-spacing: 3px;
-      color: rgba(255,255,255,0.2);
-      padding: 32px 0;
-    }
-    .log-entry {
-      display: flex;
-      align-items: center;
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      gap: 8px;
-      font-size: 12px;
-      letter-spacing: 0.5px;
-    }
+    .log-header { padding: 20px 24px 12px; flex-shrink: 0; }
+    .log-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 20px; }
+    .log-title { text-align: center; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 1px; }
+    .log-list { overflow-y: auto; flex: 1; padding: 8px 24px calc(env(safe-area-inset-bottom, 16px) + 16px); }
+    .log-empty { text-align: center; font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,0.2); padding: 32px 0; }
+    .log-entry { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; font-size: 12px; }
     .log-entry:last-child { border-bottom: none; }
     .log-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
     .log-dot.sub  { background: #ff5566; }
     .log-dot.add  { background: #33dd66; }
     .log-dot.half { background: #ff5566; }
     .log-player { color: rgba(255,255,255,0.5); flex-shrink: 0; min-width: 68px; }
-    .log-arrow { color: rgba(255,255,255,0.2); flex-shrink: 0; }
-    .log-change {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      flex-shrink: 0;
-      min-width: 52px;
-    }
+    .log-arrow  { color: rgba(255,255,255,0.2); flex-shrink: 0; }
+    .log-change { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; flex-shrink: 0; min-width: 52px; }
     .log-change.sub  { color: #ff5566; }
     .log-change.add  { color: #33dd66; }
     .log-change.half { color: #ff5566; }
-    .log-result {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
-      font-weight: 700;
-      color: #fff;
-      margin-left: auto;
+    .log-result { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; color: #fff; margin-left: auto; }
+
+    @keyframes pulse-teal {
+      0%   { text-shadow: 0 0 0px rgba(0,201,177,0); }
+      50%  { text-shadow: 0 0 24px rgba(0,201,177,0.9); }
+      100% { text-shadow: 0 0 0px rgba(0,201,177,0); }
     }
+    @keyframes pulse-purple {
+      0%   { text-shadow: 0 0 0px rgba(155,93,229,0); }
+      50%  { text-shadow: 0 0 24px rgba(155,93,229,0.9); }
+      100% { text-shadow: 0 0 0px rgba(155,93,229,0); }
+    }
+    .flash-p1 { animation: pulse-teal   0.5s ease; }
+    .flash-p2 { animation: pulse-purple 0.5s ease; }
   </style>
 </head>
 <body>
 
 <div id="app">
-
-  <!-- Player 2 (top, rotated) -->
   <div class="panel p2">
     <span class="player-label">PLAYER 2</span>
     <button class="life-btn" onclick="openEditor(2)">
       <span class="life-number" id="lp2">8000</span>
-      <span class="life-hint">LP · TAP TO EDIT</span>
+      <span class="life-hint">LP &middot; TAP TO EDIT</span>
     </button>
-    <span class="defeated" id="dead2">💀 DEFEATED</span>
+    <span class="defeated" id="dead2">&#x1F480; DEFEATED</span>
   </div>
 
-  <!-- Divider with dice + coin -->
   <div class="divider">
-    <button class="divider-btn" onclick="openLog()">📜</button>
-    <button class="divider-btn" onclick="rollDice()" title="Roll dice">🎲</button>
-    <div class="divider-sep"></div>
-    <button class="divider-btn" onclick="flipCoin()" title="Flip coin">🪙</button>
+    <button class="divider-btn" onclick="rollDice()">&#x1F3B2;</button>
+    <span class="divider-sep"></span>
+    <button class="divider-btn" onclick="flipCoin()">&#x1FA99;</button>
+    <span class="divider-sep"></span>
+    <button class="divider-btn" onclick="openLog()">&#x1F4DC;</button>
+    <span class="divider-sep"></span>
+    <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">&#x1F4F2; INSTALL</a>
   </div>
 
-  <!-- Player 1 (bottom) -->
   <div class="panel p1">
     <span class="player-label">PLAYER 1</span>
     <button class="life-btn" onclick="openEditor(1)">
       <span class="life-number" id="lp1">8000</span>
-      <span class="life-hint">LP · TAP TO EDIT</span>
+      <span class="life-hint">LP &middot; TAP TO EDIT</span>
     </button>
-    <span class="defeated" id="dead1">💀 DEFEATED</span>
-
+    <span class="defeated" id="dead1">&#x1F480; DEFEATED</span>
     <div class="reset-wrap">
-      <button class="reset-btn" onclick="resetGame()">↺ RESET</button>
+      <button class="reset-btn" onclick="resetGame()">&#x21BA; RESET</button>
     </div>
   </div>
 </div>
 
-<!-- Dice/Coin Result Popup -->
-<div class="popup-backdrop" id="popup-backdrop" onclick="dismissPopup()"></div>
-<div class="result-popup" id="result-popup">
-  <div class="result-emoji" id="result-emoji"></div>
-  <div class="result-label" id="result-label"></div>
-  <div class="result-value" id="result-value"></div>
-  <div class="result-dismiss">TAP TO DISMISS</div>
+<div class="result-toast" id="result-toast" onclick="hideToast()">
+  <div class="result-emoji" id="result-emoji">&#x1F3B2;</div>
+  <div class="result-label" id="result-label">6</div>
+  <div class="result-type" id="result-type">DICE ROLL &middot; TAP TO DISMISS</div>
 </div>
 
-<!-- Edit Modal -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
-  <div class="sheet" id="sheet">
+  <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title-label" id="sheet-player-label">PLAYER 1</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
-
     <div class="mode-toggle">
-      <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">− SUBTRACT</button>
+      <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">- SUB</button>
       <button class="mode-btn"             id="btn-add"  onclick="setMode('add')">+ ADD</button>
-      <button class="mode-btn"             id="btn-half" onclick="setMode('half')">÷2 HALVE</button>
+      <button class="mode-btn"             id="btn-half" onclick="setMode('half')">1/2 HALF</button>
     </div>
-
     <div class="input-row" id="input-row">
-      <span class="input-sign sign-sub" id="input-sign">−</span>
-      <input id="amount-input" type="number" inputmode="numeric" min="0" placeholder="0"
-             oninput="updatePreview()" />
+      <span class="input-sign sign-sub" id="input-sign">-</span>
+      <input id="amount-input" type="number" inputmode="numeric" min="0" placeholder="0" oninput="updatePreview()" />
     </div>
-
     <div class="preview" id="preview"></div>
-
     <button class="confirm-btn" id="confirm-btn" onclick="confirmEdit()" disabled>CONFIRM</button>
   </div>
 </div>
 
-<script>
-  let lp = { 1: 8000, 2: 8000 };
-  let gameLog = [];
-  let activePlayer = 1;
-  let mode = 'sub';
-
-  const colors = { 1: '#00c9b1', 2: '#9b59ff' };
-
-  // ── DICE & COIN ──
-  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
-
-  function rollDice() {
-    const roll = Math.floor(Math.random() * 6) + 1;
-    showResult('🎲', 'YOU ROLLED', DICE_FACES[roll - 1] + '  ' + roll);
-  }
-
-  function flipCoin() {
-    const heads = Math.random() < 0.5;
-    showResult(heads ? '🌕' : '🌑', 'COIN FLIP', heads ? 'HEADS' : 'TAILS');
-  }
-
-  function showResult(emoji, label, value) {
-    document.getElementById('result-emoji').textContent = emoji;
-    document.getElementById('result-label').textContent = label;
-    document.getElementById('result-value').textContent = value;
-    document.getElementById('result-popup').classList.add('show');
-    document.getElementById('popup-backdrop').classList.add('show');
-  }
-
-  function dismissPopup() {
-    document.getElementById('result-popup').classList.remove('show');
-    document.getElementById('popup-backdrop').classList.remove('show');
-  }
-
-  // ── EDITOR ──
-  function openEditor(player) {
-    activePlayer = player;
-    document.getElementById('sheet-player-label').textContent = `PLAYER ${player}`;
-    document.getElementById('amount-input').value = '';
-    document.getElementById('preview').textContent = '';
-    document.getElementById('confirm-btn').disabled = true;
-    setMode('sub');
-
-    const c = colors[player];
-    document.getElementById('confirm-btn').style.background = c;
-    document.getElementById('input-row').style.borderColor = c + '55';
-
-    document.getElementById('overlay').classList.add('open');
-    setTimeout(() => document.getElementById('amount-input').focus(), 300);
-  }
-
-  function closeEditor() {
-    document.getElementById('overlay').classList.remove('open');
-    document.getElementById('amount-input').blur();
-  }
-
-  function handleOverlayClick(e) {
-    if (e.target === document.getElementById('overlay')) closeEditor();
-  }
-
-  // ── MODE ──
-  function setMode(m) {
-    mode = m;
-    const input = document.getElementById('amount-input');
-    const sign  = document.getElementById('input-sign');
-    const btnSub  = document.getElementById('btn-sub');
-    const btnAdd  = document.getElementById('btn-add');
-    const btnHalf = document.getElementById('btn-half');
-
-    btnSub.className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
-    btnAdd.className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
-    btnHalf.className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
-
-    if (m === 'half') {
-      sign.textContent = '÷2';
-      sign.className = 'input-sign sign-half';
-      input.value = '';
-      input.disabled = true;
-      // auto-preview halve
-      const result = Math.floor(lp[activePlayer] / 2);
-      document.getElementById('preview').textContent = `${lp[activePlayer]}  →  ${result}`;
-      document.getElementById('confirm-btn').disabled = false;
-    } else {
-      sign.textContent = m === 'sub' ? '−' : '+';
-      sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
-      input.disabled = false;
-      input.focus();
-      updatePreview();
-    }
-  }
-
-  // ── PREVIEW ──
-  function updatePreview() {
-    if (mode === 'half') return;
-    const raw = document.getElementById('amount-input').value;
-    const val = parseInt(raw, 10);
-    const confirmBtn = document.getElementById('confirm-btn');
-
-    if (!raw || isNaN(val) || val < 0) {
-      document.getElementById('preview').textContent = '';
-      confirmBtn.disabled = true;
-      return;
-    }
-
-    const current = lp[activePlayer];
-    const result = mode === 'add' ? current + val : current - val;
-    document.getElementById('preview').textContent = `${current}  →  ${result}`;
-    confirmBtn.disabled = false;
-  }
-
-  // ── CONFIRM ──
-  function confirmEdit() {
-    if (mode === 'half') {
-      const prev = lp[activePlayer];
-      lp[activePlayer] = Math.floor(lp[activePlayer] / 2);
-      addLogEntry(activePlayer, 'half', prev - lp[activePlayer], lp[activePlayer]);
-    } else {
-      const val = parseInt(document.getElementById('amount-input').value, 10);
-      if (isNaN(val)) return;
-      lp[activePlayer] = mode === 'add' ? lp[activePlayer] + val : lp[activePlayer] - val;
-      addLogEntry(activePlayer, mode, val, lp[activePlayer]);
-    }
-    renderLP(activePlayer);
-    closeEditor();
-  }
-
-
-  // ── GAME LOG ──
-  function addLogEntry(player, type, change, result) {
-    gameLog.push({ player, type, change, result });
-    renderLog();
-  }
-
-  function renderLog() {
-    const list = document.getElementById('log-list');
-    const empty = document.getElementById('log-empty');
-    list.querySelectorAll('.log-entry').forEach(e => e.remove());
-    if (gameLog.length === 0) {
-      empty.style.display = 'block';
-      return;
-    }
-    empty.style.display = 'none';
-    [...gameLog].reverse().forEach(entry => {
-      const changeStr = entry.type === 'half'
-        ? '÷2'
-        : (entry.type === 'add' ? '+' : '-') + entry.change.toLocaleString();
-      const div = document.createElement('div');
-      div.className = 'log-entry';
-      div.innerHTML = `
-        <span class="log-dot ${entry.type}"></span>
-        <span class="log-player">Player ${entry.player}</span>
-        <span class="log-arrow">→</span>
-        <span class="log-change ${entry.type}">${changeStr}</span>
-        <span class="log-arrow">→</span>
-        <span class="log-result">${entry.result.toLocaleString()}</span>
-      `;
-      list.appendChild(div);
-    });
-  }
-
-  function openLog() {
-    document.getElementById('log-overlay').classList.add('open');
-  }
-  function closeLog() {
-    document.getElementById('log-overlay').classList.remove('open');
-  }
-  function handleLogOverlayClick(e) {
-    if (e.target === document.getElementById('log-overlay')) closeLog();
-  }
-
-  // ── RENDER ──
-  function renderLP(player) {
-    const el    = document.getElementById(`lp${player}`);
-    const deadEl = document.getElementById(`dead${player}`);
-    el.textContent = lp[player].toLocaleString();
-
-    if (lp[player] <= 0) {
-      el.classList.add('dead');
-      deadEl.classList.add('visible');
-    } else {
-      el.classList.remove('dead');
-      deadEl.classList.remove('visible');
-    }
-
-    el.classList.remove('flash-p1', 'flash-p2');
-    void el.offsetWidth;
-    el.classList.add(`flash-p${player}`);
-  }
-
-  // ── RESET ──
-  function resetGame() {
-    lp[1] = 8000; lp[2] = 8000;
-    gameLog = [];
-    renderLog();
-    renderLP(1); renderLP(2);
-  }
-
-  // ── ENTER KEY ──
-  document.getElementById('amount-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !document.getElementById('confirm-btn').disabled) confirmEdit();
-  });
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
-</script>
-
-<!-- Game Log Sheet -->
 <div class="log-overlay" id="log-overlay" onclick="handleLogOverlayClick(event)">
   <div class="log-sheet">
     <div class="log-header">
@@ -773,5 +255,182 @@
     </div>
   </div>
 </div>
+
+<script>
+  var lp = { 1: 8000, 2: 8000 };
+  var gameLog = [];
+  var activePlayer = 1;
+  var mode = 'sub';
+  var colors = { 1: '#00c9b1', 2: '#9b5de5' };
+
+  function openEditor(player) {
+    activePlayer = player;
+    document.getElementById('sheet-player-label').textContent = 'PLAYER ' + player;
+    document.getElementById('amount-input').value = '';
+    document.getElementById('preview').textContent = '';
+    document.getElementById('confirm-btn').disabled = true;
+    setMode('sub');
+    var c = colors[player];
+    document.getElementById('confirm-btn').style.background = c;
+    document.getElementById('input-row').style.borderColor = c + '55';
+    document.getElementById('overlay').classList.add('open');
+    setTimeout(function() { document.getElementById('amount-input').focus(); }, 300);
+  }
+
+  function closeEditor() {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('amount-input').blur();
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeEditor();
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('btn-sub').className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
+    document.getElementById('btn-add').className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
+    document.getElementById('btn-half').className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
+    var sign       = document.getElementById('input-sign');
+    var inputRow   = document.getElementById('input-row');
+    var confirmBtn = document.getElementById('confirm-btn');
+    if (m === 'half') {
+      inputRow.classList.add('hidden');
+      sign.textContent = '1/2';
+      sign.className = 'input-sign sign-half';
+      var result = Math.floor(lp[activePlayer] / 2);
+      document.getElementById('preview').textContent = lp[activePlayer].toLocaleString() + '  ->  ' + result.toLocaleString();
+      confirmBtn.disabled = false;
+      confirmBtn.style.background = '#f0a500';
+    } else {
+      inputRow.classList.remove('hidden');
+      sign.textContent = m === 'sub' ? '-' : '+';
+      sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
+      confirmBtn.style.background = colors[activePlayer];
+      updatePreview();
+    }
+  }
+
+  function updatePreview() {
+    if (mode === 'half') return;
+    var raw = document.getElementById('amount-input').value;
+    var val = parseInt(raw, 10);
+    var confirmBtn = document.getElementById('confirm-btn');
+    if (!raw || isNaN(val) || val < 0) {
+      document.getElementById('preview').textContent = '';
+      confirmBtn.disabled = true;
+      return;
+    }
+    var current = lp[activePlayer];
+    var result = mode === 'add' ? current + val : current - val;
+    document.getElementById('preview').textContent = current.toLocaleString() + '  ->  ' + result.toLocaleString();
+    confirmBtn.disabled = false;
+  }
+
+  function confirmEdit() {
+    if (mode === 'half') {
+      var prev = lp[activePlayer];
+      lp[activePlayer] = Math.floor(lp[activePlayer] / 2);
+      gameLog.push({ player: activePlayer, type: 'half', change: prev - lp[activePlayer], result: lp[activePlayer] });
+    } else {
+      var val = parseInt(document.getElementById('amount-input').value, 10);
+      if (isNaN(val)) return;
+      lp[activePlayer] = mode === 'add' ? lp[activePlayer] + val : lp[activePlayer] - val;
+      gameLog.push({ player: activePlayer, type: mode, change: val, result: lp[activePlayer] });
+    }
+    renderLP(activePlayer);
+    closeEditor();
+  }
+
+  function renderLP(player) {
+    var el     = document.getElementById('lp' + player);
+    var deadEl = document.getElementById('dead' + player);
+    el.textContent = lp[player].toLocaleString();
+    if (lp[player] <= 0) {
+      el.classList.add('dead');
+      deadEl.classList.add('visible');
+    } else {
+      el.classList.remove('dead');
+      deadEl.classList.remove('visible');
+    }
+    el.classList.remove('flash-p1', 'flash-p2');
+    void el.offsetWidth;
+    el.classList.add('flash-p' + player);
+  }
+
+  function resetGame() {
+    lp[1] = 8000; lp[2] = 8000;
+    gameLog = [];
+    renderLP(1); renderLP(2);
+  }
+
+  function openLog() {
+    var list  = document.getElementById('log-list');
+    var empty = document.getElementById('log-empty');
+    list.querySelectorAll('.log-entry').forEach(function(e) { e.remove(); });
+    if (gameLog.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      gameLog.slice().reverse().forEach(function(entry) {
+        var changeStr = entry.type === 'half'
+          ? '\u00f72'
+          : (entry.type === 'add' ? '+' : '-') + entry.change.toLocaleString();
+        var div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerHTML =
+          '<span class="log-dot ' + entry.type + '"></span>' +
+          '<span class="log-player">Player ' + entry.player + '</span>' +
+          '<span class="log-arrow">\u2192</span>' +
+          '<span class="log-change ' + entry.type + '">' + changeStr + '</span>' +
+          '<span class="log-arrow">\u2192</span>' +
+          '<span class="log-result">' + entry.result.toLocaleString() + '</span>';
+        list.appendChild(div);
+      });
+    }
+    document.getElementById('log-overlay').classList.add('open');
+  }
+
+  function closeLog() {
+    document.getElementById('log-overlay').classList.remove('open');
+  }
+
+  function handleLogOverlayClick(e) {
+    if (e.target === document.getElementById('log-overlay')) closeLog();
+  }
+
+  var DICE_FACES = ['\u2680','\u2681','\u2682','\u2683','\u2684','\u2685'];
+  function rollDice() {
+    var n = Math.floor(Math.random() * 6) + 1;
+    showToast(DICE_FACES[n - 1], 'ROLLED A ' + n, 'DICE ROLL');
+  }
+
+  function flipCoin() {
+    var heads = Math.random() < 0.5;
+    showToast(heads ? '\uD83C\uDF15' : '\uD83C\uDF11', heads ? 'HEADS' : 'TAILS', 'COIN FLIP');
+  }
+
+  var toastTimer = null;
+  function showToast(emoji, label, type) {
+    document.getElementById('result-emoji').textContent = emoji;
+    document.getElementById('result-label').textContent = label;
+    document.getElementById('result-type').textContent  = type + ' \u00b7 TAP TO DISMISS';
+    document.getElementById('result-toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3500);
+  }
+  function hideToast() {
+    document.getElementById('result-toast').classList.remove('show');
+    clearTimeout(toastTimer);
+  }
+
+  document.getElementById('amount-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !document.getElementById('confirm-btn').disabled) confirmEdit();
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  }
+</script>
 </body>
 </html>
