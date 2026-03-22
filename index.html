@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Life Counter" />
+  <meta name="apple-mobile-web-app-title" content="Duel Tracker" />
   <meta name="theme-color" content="#000000" />
-  <title>Life Counter</title>
+  <title>Duel Tracker</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="icon.png" />
 
@@ -17,8 +17,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --p1: #ff4444;
-      --p2: #3399ff;
+      --p1: #00c9b1;
+      --p2: #9b5de5;
       --bg: #0a0a0a;
       --surface: rgba(255,255,255,0.04);
       --border: rgba(255,255,255,0.08);
@@ -36,7 +36,6 @@
       user-select: none;
     }
 
-    /* ── LAYOUT ── */
     #app {
       display: flex;
       flex-direction: column;
@@ -55,29 +54,78 @@
       gap: 10px;
     }
 
-    .panel.p1 { background: linear-gradient(to top, rgba(255,68,68,0.10), transparent); }
+    .panel.p1 { background: linear-gradient(to top, rgba(0,201,177,0.10), transparent); }
     .panel.p2 {
-      background: linear-gradient(to bottom, rgba(51,153,255,0.10), transparent);
+      background: linear-gradient(to bottom, rgba(155,93,229,0.10), transparent);
       transform: rotate(180deg);
     }
 
     /* ── DIVIDER ── */
     .divider {
       position: relative;
-      height: 1px;
-      background: var(--border);
+      height: 52px;
+      background: #0f0f0f;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 16px;
       z-index: 10;
     }
-    .divider-icon {
-      background: var(--bg);
-      padding: 0 10px;
+
+    .divider-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      width: 44px;
+      height: 36px;
       font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
       line-height: 1;
-      position: absolute;
+    }
+    .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
+
+    /* ── RESULT TOAST ── */
+    .result-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      background: #1c1c1c;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 22px;
+      padding: 32px 48px;
+      text-align: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      min-width: 200px;
+    }
+    .result-toast.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: all;
+    }
+    .result-emoji { font-size: 56px; line-height: 1; margin-bottom: 12px; }
+    .result-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 3px;
+    }
+    .result-type {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: rgba(255,255,255,0.3);
+      margin-top: 8px;
     }
 
     /* ── PLAYER LABEL ── */
@@ -90,7 +138,7 @@
     .p1 .player-label { color: var(--p1); }
     .p2 .player-label { color: var(--p2); }
 
-    /* ── LIFE DISPLAY (tappable) ── */
+    /* ── LIFE DISPLAY ── */
     .life-btn {
       background: var(--surface);
       border: 1px solid rgba(255,255,255,0.08);
@@ -124,10 +172,10 @@
       color: #fff;
     }
 
-    .p1 .life-btn { border-color: rgba(255,68,68,0.25); }
-    .p2 .life-btn { border-color: rgba(51,153,255,0.25); }
+    .p1 .life-btn { border-color: rgba(0,201,177,0.25); }
+    .p2 .life-btn { border-color: rgba(155,93,229,0.25); }
 
-    /* ── DEFEATED TAG ── */
+    /* ── DEFEATED ── */
     .defeated {
       font-size: 10px;
       letter-spacing: 3px;
@@ -137,7 +185,7 @@
     }
     .defeated.visible { display: block; }
 
-    /* ── RESET BUTTON ── */
+    /* ── RESET ── */
     .reset-wrap {
       position: absolute;
       bottom: env(safe-area-inset-bottom, 12px);
@@ -158,7 +206,7 @@
     }
     .reset-btn:active { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6); }
 
-    /* ── MODAL OVERLAY ── */
+    /* ── OVERLAY / SHEET ── */
     .overlay {
       position: fixed;
       inset: 0;
@@ -172,10 +220,7 @@
       pointer-events: none;
       transition: opacity 0.25s ease;
     }
-    .overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .overlay.open { opacity: 1; pointer-events: all; }
 
     .sheet {
       background: #141414;
@@ -224,25 +269,20 @@
     }
     .mode-btn {
       flex: 1;
-      padding: 10px;
+      padding: 8px 2px;
       border-radius: 9px;
       border: none;
       font-family: 'Share Tech Mono', monospace;
-      font-size: 12px;
-      letter-spacing: 1px;
+      font-size: 11px;
+      letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 0.18s ease;
       background: transparent;
       color: rgba(255,255,255,0.35);
     }
-    .mode-btn.active-sub {
-      background: #ff4444;
-      color: #000;
-    }
-    .mode-btn.active-add {
-      background: #33dd66;
-      color: #000;
-    }
+    .mode-btn.active-sub  { background: #ff5566; color: #000; }
+    .mode-btn.active-add  { background: #33dd66; color: #000; }
+    .mode-btn.active-half { background: #f0a500; color: #000; }
 
     /* ── INPUT ROW ── */
     .input-row {
@@ -255,17 +295,20 @@
       margin-bottom: 12px;
       border: 1px solid rgba(255,255,255,0.08);
     }
+    .input-row.hidden { display: none; }
+
     .input-sign {
       font-family: 'Rajdhani', sans-serif;
       font-size: 32px;
       font-weight: 700;
-      width: 24px;
+      width: 28px;
       text-align: center;
       flex-shrink: 0;
       transition: color 0.18s;
     }
-    .sign-sub { color: #ff4444; }
-    .sign-add { color: #33dd66; }
+    .sign-sub  { color: #ff5566; }
+    .sign-add  { color: #33dd66; }
+    .sign-half { color: #f0a500; font-size: 22px; }
 
     #amount-input {
       flex: 1;
@@ -281,7 +324,6 @@
       -webkit-appearance: none;
     }
 
-    /* ── PREVIEW ── */
     .preview {
       text-align: center;
       font-size: 12px;
@@ -291,7 +333,6 @@
       letter-spacing: 1px;
     }
 
-    /* ── CONFIRM BUTTON ── */
     .confirm-btn {
       width: 100%;
       padding: 16px;
@@ -311,27 +352,27 @@
       cursor: default;
     }
 
-    /* ── PULSE ANIMATION ON LP CHANGE ── */
-    @keyframes pulse-red {
-      0% { text-shadow: 0 0 0px rgba(255,68,68,0); }
-      50% { text-shadow: 0 0 20px rgba(255,68,68,0.8); }
-      100% { text-shadow: 0 0 0px rgba(255,68,68,0); }
+    /* ── FLASH ANIMATIONS ── */
+    @keyframes pulse-teal {
+      0%   { text-shadow: 0 0 0px rgba(0,201,177,0); }
+      50%  { text-shadow: 0 0 24px rgba(0,201,177,0.9); }
+      100% { text-shadow: 0 0 0px rgba(0,201,177,0); }
     }
-    @keyframes pulse-blue {
-      0% { text-shadow: 0 0 0px rgba(51,153,255,0); }
-      50% { text-shadow: 0 0 20px rgba(51,153,255,0.8); }
-      100% { text-shadow: 0 0 0px rgba(51,153,255,0); }
+    @keyframes pulse-purple {
+      0%   { text-shadow: 0 0 0px rgba(155,93,229,0); }
+      50%  { text-shadow: 0 0 24px rgba(155,93,229,0.9); }
+      100% { text-shadow: 0 0 0px rgba(155,93,229,0); }
     }
-    .flash-p1 { animation: pulse-red 0.5s ease; }
-    .flash-p2 { animation: pulse-blue 0.5s ease; }
+    .flash-p1 { animation: pulse-teal   0.5s ease; }
+    .flash-p2 { animation: pulse-purple 0.5s ease; }
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- Player 2 (top, rotated via CSS) -->
-  <div class="panel p2" id="panel-p2">
+  <!-- Player 2 (top, rotated) -->
+  <div class="panel p2">
     <span class="player-label">PLAYER 2</span>
     <button class="life-btn" onclick="openEditor(2)">
       <span class="life-number" id="lp2">8000</span>
@@ -342,11 +383,12 @@
 
   <!-- Divider -->
   <div class="divider">
-    <span class="divider-icon">⚔️</span>
+    <button class="divider-btn" onclick="rollDice()">🎲</button>
+    <button class="divider-btn" onclick="flipCoin()">🪙</button>
   </div>
 
   <!-- Player 1 (bottom) -->
-  <div class="panel p1" id="panel-p1">
+  <div class="panel p1">
     <span class="player-label">PLAYER 1</span>
     <button class="life-btn" onclick="openEditor(1)">
       <span class="life-number" id="lp1">8000</span>
@@ -361,16 +403,24 @@
 
 </div>
 
-<!-- Edit Modal -->
+<!-- Dice / Coin Result Toast -->
+<div class="result-toast" id="result-toast" onclick="hideToast()">
+  <div class="result-emoji" id="result-emoji">🎲</div>
+  <div class="result-label" id="result-label">6</div>
+  <div class="result-type" id="result-type">DICE ROLL · TAP TO DISMISS</div>
+</div>
+
+<!-- Edit Sheet -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
-  <div class="sheet" id="sheet">
+  <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-title-label" id="sheet-player-label">PLAYER 1</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
 
     <div class="mode-toggle">
-      <button class="mode-btn active-sub" id="btn-sub" onclick="setMode('sub')">− SUBTRACT</button>
-      <button class="mode-btn" id="btn-add" onclick="setMode('add')">+ ADD</button>
+      <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">− SUB</button>
+      <button class="mode-btn"             id="btn-add"  onclick="setMode('add')">+ ADD</button>
+      <button class="mode-btn"             id="btn-half" onclick="setMode('half')">½ HALF</button>
     </div>
 
     <div class="input-row" id="input-row">
@@ -386,15 +436,11 @@
 </div>
 
 <script>
-  // ── STATE ──
   let lp = { 1: 8000, 2: 8000 };
   let activePlayer = 1;
-  let mode = 'sub'; // 'add' | 'sub'
+  let mode = 'sub';
+  const colors = { 1: '#00c9b1', 2: '#9b5de5' };
 
-  // ── ACCENT COLORS ──
-  const colors = { 1: '#ff4444', 2: '#3399ff' };
-
-  // ── OPEN EDITOR ──
   function openEditor(player) {
     activePlayer = player;
     document.getElementById('sheet-player-label').textContent = `PLAYER ${player}`;
@@ -402,12 +448,9 @@
     document.getElementById('preview').textContent = '';
     document.getElementById('confirm-btn').disabled = true;
     setMode('sub');
-
-    // Accent color
     const c = colors[player];
     document.getElementById('confirm-btn').style.background = c;
     document.getElementById('input-row').style.borderColor = c + '55';
-
     document.getElementById('overlay').classList.add('open');
     setTimeout(() => document.getElementById('amount-input').focus(), 300);
   }
@@ -421,57 +464,65 @@
     if (e.target === document.getElementById('overlay')) closeEditor();
   }
 
-  // ── MODE TOGGLE ──
   function setMode(m) {
     mode = m;
-    const btnSub = document.getElementById('btn-sub');
-    const btnAdd = document.getElementById('btn-add');
-    const sign = document.getElementById('input-sign');
+    document.getElementById('btn-sub').className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
+    document.getElementById('btn-add').className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
+    document.getElementById('btn-half').className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
 
-    btnSub.className = 'mode-btn' + (m === 'sub' ? ' active-sub' : '');
-    btnAdd.className = 'mode-btn' + (m === 'add' ? ' active-add' : '');
-    sign.textContent = m === 'sub' ? '−' : '+';
-    sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
-    updatePreview();
+    const sign     = document.getElementById('input-sign');
+    const inputRow = document.getElementById('input-row');
+    const confirmBtn = document.getElementById('confirm-btn');
+
+    if (m === 'half') {
+      inputRow.classList.add('hidden');
+      sign.textContent = '½';
+      sign.className = 'input-sign sign-half';
+      const result = Math.floor(lp[activePlayer] / 2);
+      document.getElementById('preview').textContent = `${lp[activePlayer].toLocaleString()}  →  ${result.toLocaleString()}`;
+      confirmBtn.disabled = false;
+      confirmBtn.style.background = '#f0a500';
+    } else {
+      inputRow.classList.remove('hidden');
+      sign.textContent = m === 'sub' ? '−' : '+';
+      sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
+      confirmBtn.style.background = colors[activePlayer];
+      updatePreview();
+    }
   }
 
-  // ── PREVIEW ──
   function updatePreview() {
+    if (mode === 'half') return;
     const raw = document.getElementById('amount-input').value;
     const val = parseInt(raw, 10);
     const confirmBtn = document.getElementById('confirm-btn');
-
     if (!raw || isNaN(val) || val < 0) {
       document.getElementById('preview').textContent = '';
       confirmBtn.disabled = true;
       return;
     }
-
     const current = lp[activePlayer];
     const result = mode === 'add' ? current + val : current - val;
-    document.getElementById('preview').textContent = `${current}  →  ${result}`;
+    document.getElementById('preview').textContent = `${current.toLocaleString()}  →  ${result.toLocaleString()}`;
     confirmBtn.disabled = false;
   }
 
-  // ── CONFIRM ──
   function confirmEdit() {
-    const val = parseInt(document.getElementById('amount-input').value, 10);
-    if (isNaN(val)) return;
-
-    lp[activePlayer] = mode === 'add'
-      ? lp[activePlayer] + val
-      : lp[activePlayer] - val;
-
+    if (mode === 'half') {
+      lp[activePlayer] = Math.floor(lp[activePlayer] / 2);
+    } else {
+      const val = parseInt(document.getElementById('amount-input').value, 10);
+      if (isNaN(val)) return;
+      lp[activePlayer] = mode === 'add' ? lp[activePlayer] + val : lp[activePlayer] - val;
+    }
     renderLP(activePlayer);
     closeEditor();
   }
 
-  // ── RENDER ──
   function renderLP(player) {
-    const el = document.getElementById(`lp${player}`);
+    const el     = document.getElementById(`lp${player}`);
     const deadEl = document.getElementById(`dead${player}`);
     el.textContent = lp[player].toLocaleString();
-
     if (lp[player] <= 0) {
       el.classList.add('dead');
       deadEl.classList.add('visible');
@@ -479,29 +530,48 @@
       el.classList.remove('dead');
       deadEl.classList.remove('visible');
     }
-
-    // Flash animation
-    el.classList.remove(`flash-p1`, `flash-p2`);
-    void el.offsetWidth; // reflow
+    el.classList.remove('flash-p1', 'flash-p2');
+    void el.offsetWidth;
     el.classList.add(`flash-p${player}`);
   }
 
-  // ── RESET ──
   function resetGame() {
-    lp[1] = 8000;
-    lp[2] = 8000;
-    renderLP(1);
-    renderLP(2);
+    lp[1] = 8000; lp[2] = 8000;
+    renderLP(1); renderLP(2);
   }
 
-  // ── KEYBOARD: Enter to confirm ──
-  document.getElementById('amount-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      if (!document.getElementById('confirm-btn').disabled) confirmEdit();
-    }
+  // ── DICE ──
+  const DICE_FACES = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+  function rollDice() {
+    const n = Math.floor(Math.random() * 6) + 1;
+    showToast(DICE_FACES[n - 1], `ROLLED A ${n}`, 'DICE ROLL');
+  }
+
+  // ── COIN ──
+  function flipCoin() {
+    const heads = Math.random() < 0.5;
+    showToast(heads ? '🌕' : '🌑', heads ? 'HEADS' : 'TAILS', 'COIN FLIP');
+  }
+
+  // ── TOAST ──
+  let toastTimer = null;
+  function showToast(emoji, label, type) {
+    document.getElementById('result-emoji').textContent = emoji;
+    document.getElementById('result-label').textContent = label;
+    document.getElementById('result-type').textContent  = type + ' · TAP TO DISMISS';
+    document.getElementById('result-toast').classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(hideToast, 3500);
+  }
+  function hideToast() {
+    document.getElementById('result-toast').classList.remove('show');
+    clearTimeout(toastTimer);
+  }
+
+  document.getElementById('amount-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !document.getElementById('confirm-btn').disabled) confirmEdit();
   });
 
-  // ── SERVICE WORKER ──
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }

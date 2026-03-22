@@ -1,6 +1,6 @@
 {
-  "name": "Life Counter",
-  "short_name": "Life Counter",
+  "name": "Duel Tracker",
+  "short_name": "Duel Tracker",
   "description": "Two-player life point tracker",
   "start_url": "/index.html",
   "display": "fullscreen",
