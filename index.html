@@ -165,7 +165,9 @@
     .log-dot.sub  { background: #ff5566; }
     .log-dot.add  { background: #33dd66; }
     .log-dot.half { background: #ff5566; }
-    .log-player { color: rgba(255,255,255,0.5); flex-shrink: 0; min-width: 68px; }
+    .log-player { flex-shrink: 0; min-width: 68px; }
+    .log-player.p1 { color: #00c9b1; }
+    .log-player.p2 { color: #9b5de5; }
     .log-arrow  { color: rgba(255,255,255,0.2); flex-shrink: 0; }
     .log-change { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; flex-shrink: 0; min-width: 52px; }
     .log-change.sub  { color: #ff5566; }
@@ -386,8 +388,7 @@
         var div = document.createElement('div');
         div.className = 'log-entry';
         div.innerHTML =
-          '<span class="log-dot ' + entry.type + '"></span>' +
-          '<span class="log-player">Player ' + entry.player + '</span>' +
+          '<span class="log-player p' + entry.player + '">Player ' + entry.player + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
           '<span class="log-change ' + entry.type + '">' + changeStr + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
