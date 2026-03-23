@@ -193,7 +193,7 @@
 
 <div id="app">
   <div class="panel p2">
-    <span class="player-label">PLAYER 2</span>
+    <span class="player-label">DUELIST 2</span>
     <button class="life-btn" onclick="openEditor(2)">
       <span class="life-number" id="lp2">8000</span>
       <span class="life-hint">LP &middot; TAP TO EDIT</span>
@@ -212,7 +212,7 @@
   </div>
 
   <div class="panel p1">
-    <span class="player-label">PLAYER 1</span>
+    <span class="player-label">DUELIST 1</span>
     <button class="life-btn" onclick="openEditor(1)">
       <span class="life-number" id="lp1">8000</span>
       <span class="life-hint">LP &middot; TAP TO EDIT</span>
@@ -236,7 +236,7 @@
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-title-label" id="sheet-player-label">PLAYER 1</div>
+    <div class="sheet-title-label" id="sheet-player-label">DUELIST 1</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
     <div class="mode-toggle">
       <button class="mode-btn active-sub"  id="btn-sub"  onclick="setMode('sub')">- SUB</button>
@@ -274,7 +274,7 @@
 
   function openEditor(player) {
     activePlayer = player;
-    document.getElementById('sheet-player-label').textContent = 'PLAYER ' + player;
+    document.getElementById('sheet-player-label').textContent = 'DUELIST ' + player;
     document.getElementById('amount-input').value = '';
     document.getElementById('preview').textContent = '';
     document.getElementById('confirm-btn').disabled = true;
@@ -388,7 +388,7 @@
         var div = document.createElement('div');
         div.className = 'log-entry';
         div.innerHTML =
-          '<span class="log-player p' + entry.player + '">Player ' + entry.player + '</span>' +
+          '<span class="log-player p' + entry.player + '">Duelist ' + entry.player + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
           '<span class="log-change ' + entry.type + '">' + changeStr + '</span>' +
           '<span class="log-arrow">\u2192</span>' +

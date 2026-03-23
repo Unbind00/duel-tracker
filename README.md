@@ -33,7 +33,7 @@ A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and hal
 
 ## How to Use
 
-- Tap either player's life point total to open the edit sheet
+- Tap either duelist's life point total to open the edit sheet
 - Choose **− SUB** to subtract, **+ ADD** to add, or **½ HALF** to halve their LP
 - Enter an amount and tap **Confirm**
 - Tap **🎲** to roll a dice or **🪙** to flip a coin
@@ -48,9 +48,9 @@ A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and hal
 The **📜** button in the middle of the screen opens a running log of every life point change made during the current duel. Each entry shows the player, what happened, and the resulting LP total:
 
 ```
-Player 1 → -2000 → 6000
-Player 2 → ÷2 → 4000
-Player 1 → +500 → 6500
+Duelist 1 → -2000 → 6000
+Duelist 2 → ÷2 → 4000
+Duelist 1 → +500 → 6500
 ```
 
 - Subtractions and halves are shown in **red**
