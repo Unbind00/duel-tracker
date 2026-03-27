@@ -28,17 +28,26 @@
     .panel.p2 { background: linear-gradient(to bottom, rgba(155,93,229,0.10), transparent); transform: rotate(180deg); }
 
     .divider {
-      height: 52px; background: #0f0f0f;
+      background: #0f0f0f;
       border-top: 1px solid rgba(255,255,255,0.07); border-bottom: 1px solid rgba(255,255,255,0.07);
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 12px; z-index: 10;
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 10;
+    }
+    .divider-row {
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      width: 100%; padding: 8px 0;
+    }
+    .divider-row + .divider-row {
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
     .divider-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px; width: 44px; height: 36px; font-size: 20px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, transform 0.1s; line-height: 1;
+      border-radius: 12px; height: 36px; padding: 0 10px; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px;
+      color: rgba(255,255,255,0.35); transition: background 0.15s, color 0.15s; white-space: nowrap;
     }
-    .divider-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.90); }
+    .divider-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
     .divider-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.10); flex-shrink: 0; }
     .install-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
@@ -240,15 +249,18 @@
   </div>
 
   <div class="divider">
-    <button class="divider-btn" onclick="rollDice()">&#x1F3B2;</button>
-    <span class="divider-sep"></span>
-    <button class="divider-btn" onclick="flipCoin()">&#x1FA99;</button>
-    <span class="divider-sep"></span>
-    <button class="divider-btn" onclick="openLog()">&#x1F4DC;</button>
-    <span class="divider-sep"></span>
-    <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">&#x1F4F2; INSTALL</a>
-    <span class="divider-sep"></span>
-    <button class="reset-btn" onclick="openResetConfirm()">&#x21BA; RESET</button>
+    <div class="divider-row">
+      <button class="divider-btn" onclick="rollDice()">&#x1F3B2; DICE ROLL</button>
+      <span class="divider-sep"></span>
+      <button class="divider-btn" onclick="flipCoin()">&#x1FA99; COIN FLIP</button>
+      <span class="divider-sep"></span>
+      <button class="divider-btn" onclick="openLog()">&#x1F4DC; DUEL LOG</button>
+    </div>
+    <div class="divider-row">
+      <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">&#x1F4F2; INSTALL</a>
+      <span class="divider-sep"></span>
+      <button class="reset-btn" onclick="openResetConfirm()">&#x21BA; RESET</button>
+    </div>
   </div>
 
   <div class="panel p1">
