@@ -434,6 +434,20 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function() {});
   }
+
+  // ── WAKE LOCK (prevent screen from sleeping) ──
+  var wakeLock = null;
+  async function keepAwake() {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') keepAwake();
+  });
+  keepAwake();
 </script>
 </body>
 </html>
