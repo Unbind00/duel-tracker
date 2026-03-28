@@ -260,7 +260,7 @@
       margin-bottom: 12px; height: 18px; letter-spacing: 1px;
     }
     .numpad-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; margin-bottom: 12px;
     }
     .numpad-key {
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
@@ -360,6 +360,7 @@
       <span class="numpad-value" id="p2-value">0</span>
     </div>
     <div class="numpad-preview" id="p2-preview"></div>
+    <button class="confirm-btn" id="p2-confirm-btn" onclick="confirmEditP2()" disabled>CONFIRM</button>
     <div class="numpad-grid" id="p2-grid">
       <button class="numpad-key" onclick="numpadPress('7')">7</button>
       <button class="numpad-key" onclick="numpadPress('8')">8</button>
@@ -374,7 +375,6 @@
       <button class="numpad-key" onclick="numpadPress('0')">0</button>
       <button class="numpad-key key-del" onclick="numpadPress('del')">&#x232B;</button>
     </div>
-    <button class="confirm-btn" id="p2-confirm-btn" onclick="confirmEditP2()" disabled>CONFIRM</button>
   </div>
 </div>
 
