@@ -158,20 +158,7 @@
       border-top: 1px solid rgba(255,255,255,0.08);
     }
     .overlay.open .sheet { transform: translateY(0); }
-    .sheet-handle {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      padding: 4px 0 16px; cursor: pointer; -webkit-tap-highlight-color: transparent;
-    }
-    .sheet-handle-pill {
-      width: 36px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px;
-      transition: background 0.15s;
-    }
-    .sheet-handle:active .sheet-handle-pill { background: rgba(255,255,255,0.35); }
-    .sheet-handle-label {
-      font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.25);
-      transition: color 0.15s;
-    }
-    .sheet-handle:active .sheet-handle-label { color: rgba(255,255,255,0.6); }
+    .sheet-handle { width: 36px; height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; margin: 0 auto 20px; }
     .sheet-title-label { text-align: center; font-size: 10px; letter-spacing: 4px; opacity: 0.5; margin-bottom: 2px; }
     .sheet-title { text-align: center; font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 20px; letter-spacing: 1px; }
 
@@ -348,10 +335,7 @@
 <!-- P2 Edit Sheet (custom numpad, rotated to face Duelist 2) -->
 <div class="overlay-p2" id="overlay-p2" onclick="handleP2OverlayClick(event)">
   <div class="sheet-p2" id="sheet-p2">
-    <div class="sheet-handle" onclick="closeEditorP2()">
-      <div class="sheet-handle-pill"></div>
-      <span class="sheet-handle-label">CANCEL</span>
-    </div>
+    <div class="sheet-handle"></div>
     <div class="sheet-title-label" id="sheet-p2-label">DUELIST 2</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
     <div class="mode-toggle">
@@ -385,10 +369,7 @@
 <!-- Edit Sheet -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="sheet">
-    <div class="sheet-handle" onclick="closeEditor()">
-      <div class="sheet-handle-pill"></div>
-      <span class="sheet-handle-label">CANCEL</span>
-    </div>
+    <div class="sheet-handle"></div>
     <div class="sheet-title-label" id="sheet-player-label">DUELIST 1</div>
     <div class="sheet-title">EDIT LIFE POINTS</div>
     <div class="mode-toggle">
