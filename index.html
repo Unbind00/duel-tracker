@@ -172,21 +172,9 @@
     .mode-btn.active-add  { background: #33dd66; color: #000; }
     .mode-btn.active-half { background: #f0a500; color: #000; }
 
-    .input-row {
-      display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.04);
-      border-radius: 14px; padding: 10px 18px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.08);
-    }
-    .input-row.hidden { display: none; }
-    .input-sign { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; width: 28px; text-align: center; flex-shrink: 0; }
     .sign-sub  { color: #ff5566; }
     .sign-add  { color: #33dd66; }
     .sign-half { color: #f0a500; font-size: 18px; }
-    #amount-input {
-      flex: 1; background: transparent; border: none; outline: none;
-      font-family: 'Rajdhani', sans-serif; font-size: 44px; font-weight: 700;
-      color: #fff; text-align: center; caret-color: rgba(255,255,255,0.5); -webkit-appearance: none;
-    }
-    .preview { text-align: center; font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 18px; height: 18px; letter-spacing: 1px; }
     .confirm-btn {
       width: 100%; padding: 16px; border-radius: 14px; border: none;
       font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 3px;
@@ -389,12 +377,26 @@
       <button class="mode-btn"             id="btn-add"  onclick="setMode('add')">+ ADD</button>
       <button class="mode-btn"             id="btn-half" onclick="setMode('half')">1/2 HALF</button>
     </div>
-    <div class="input-row" id="input-row">
-      <span class="input-sign sign-sub" id="input-sign">-</span>
-      <input id="amount-input" type="number" inputmode="numeric" min="0" placeholder="0" oninput="updatePreview()" />
+    <div class="numpad-display" id="p1-display">
+      <span class="numpad-sign sign-sub" id="p1-sign">-</span>
+      <span class="numpad-value" id="p1-value">0</span>
     </div>
-    <div class="preview" id="preview"></div>
+    <div class="numpad-preview" id="p1-preview"></div>
     <button class="confirm-btn" id="confirm-btn" onclick="confirmEdit()" disabled>CONFIRM</button>
+    <div class="numpad-grid" id="p1-grid">
+      <button class="numpad-key" onclick="numpadPressP1('7')">7</button>
+      <button class="numpad-key" onclick="numpadPressP1('8')">8</button>
+      <button class="numpad-key" onclick="numpadPressP1('9')">9</button>
+      <button class="numpad-key" onclick="numpadPressP1('4')">4</button>
+      <button class="numpad-key" onclick="numpadPressP1('5')">5</button>
+      <button class="numpad-key" onclick="numpadPressP1('6')">6</button>
+      <button class="numpad-key" onclick="numpadPressP1('1')">1</button>
+      <button class="numpad-key" onclick="numpadPressP1('2')">2</button>
+      <button class="numpad-key" onclick="numpadPressP1('3')">3</button>
+      <button class="numpad-key key-00" onclick="numpadPressP1('00')">00</button>
+      <button class="numpad-key" onclick="numpadPressP1('0')">0</button>
+      <button class="numpad-key key-del" onclick="numpadPressP1('del')">&#x232B;</button>
+    </div>
   </div>
 </div>
 
@@ -512,23 +514,23 @@
     closeEditorP2();
   }
 
+  // ── P1 NUMPAD EDITOR ──
+  var p1Input = '';
+
   function openEditor(player) {
     activePlayer = player;
+    p1Input = '';
+    mode = 'sub';
     document.getElementById('sheet-player-label').textContent = 'DUELIST ' + player;
-    document.getElementById('amount-input').value = '';
-    document.getElementById('preview').textContent = '';
+    document.getElementById('p1-value').textContent = '0';
+    document.getElementById('p1-preview').textContent = '';
     document.getElementById('confirm-btn').disabled = true;
     setMode('sub');
-    var c = colors[player];
-    document.getElementById('confirm-btn').style.background = c;
-    document.getElementById('input-row').style.borderColor = c + '55';
     document.getElementById('overlay').classList.add('open');
-    setTimeout(function() { document.getElementById('amount-input').focus(); }, 300);
   }
 
   function closeEditor() {
     document.getElementById('overlay').classList.remove('open');
-    document.getElementById('amount-input').blur();
   }
 
   function handleOverlayClick(e) {
@@ -540,54 +542,67 @@
     document.getElementById('btn-sub').className  = 'mode-btn' + (m === 'sub'  ? ' active-sub'  : '');
     document.getElementById('btn-add').className  = 'mode-btn' + (m === 'add'  ? ' active-add'  : '');
     document.getElementById('btn-half').className = 'mode-btn' + (m === 'half' ? ' active-half' : '');
-    var sign       = document.getElementById('input-sign');
-    var inputRow   = document.getElementById('input-row');
+    var sign = document.getElementById('p1-sign');
+    var grid = document.getElementById('p1-grid');
+    var display = document.getElementById('p1-display');
     var confirmBtn = document.getElementById('confirm-btn');
+    var c = colors[1];
     if (m === 'half') {
-      inputRow.classList.add('hidden');
-      sign.textContent = '1/2';
-      sign.className = 'input-sign sign-half';
-      var result = Math.floor(lp[activePlayer] / 2);
-      document.getElementById('preview').textContent = lp[activePlayer].toLocaleString() + '  ->  ' + result.toLocaleString();
+      grid.style.display = 'none';
+      display.style.display = 'none';
+      var result = Math.floor(lp[1] / 2);
+      document.getElementById('p1-preview').textContent = lp[1].toLocaleString() + '  ->  ' + result.toLocaleString();
       confirmBtn.disabled = false;
       confirmBtn.style.background = '#f0a500';
     } else {
-      inputRow.classList.remove('hidden');
+      grid.style.display = 'grid';
+      display.style.display = 'flex';
       sign.textContent = m === 'sub' ? '-' : '+';
-      sign.className = 'input-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
-      confirmBtn.style.background = colors[activePlayer];
-      updatePreview();
+      sign.className = 'numpad-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
+      confirmBtn.style.background = c;
+      p1Input = '';
+      document.getElementById('p1-value').textContent = '0';
+      document.getElementById('p1-preview').textContent = '';
+      confirmBtn.disabled = true;
     }
   }
 
-  function updatePreview() {
+  function numpadPressP1(key) {
     if (mode === 'half') return;
-    var raw = document.getElementById('amount-input').value;
-    var val = parseInt(raw, 10);
-    var confirmBtn = document.getElementById('confirm-btn');
-    if (!raw || isNaN(val) || val < 0) {
-      document.getElementById('preview').textContent = '';
-      confirmBtn.disabled = true;
-      return;
+    if (key === 'del') {
+      p1Input = p1Input.slice(0, -1);
+    } else if (key === '00') {
+      if (p1Input.length > 0) p1Input += '00';
+    } else {
+      if (p1Input.length >= 6) return;
+      p1Input += key;
     }
-    var current = lp[activePlayer];
-    var result = mode === 'add' ? current + val : current - val;
-    document.getElementById('preview').textContent = current.toLocaleString() + '  ->  ' + result.toLocaleString();
-    confirmBtn.disabled = false;
+    var val = parseInt(p1Input, 10) || 0;
+    document.getElementById('p1-value').textContent = val > 0 ? val.toLocaleString() : '0';
+    var confirmBtn = document.getElementById('confirm-btn');
+    if (val > 0) {
+      var current = lp[1];
+      var result = mode === 'add' ? current + val : current - val;
+      document.getElementById('p1-preview').textContent = current.toLocaleString() + '  ->  ' + result.toLocaleString();
+      confirmBtn.disabled = false;
+    } else {
+      document.getElementById('p1-preview').textContent = '';
+      confirmBtn.disabled = true;
+    }
   }
 
   function confirmEdit() {
     if (mode === 'half') {
-      var prev = lp[activePlayer];
-      lp[activePlayer] = Math.floor(lp[activePlayer] / 2);
-      gameLog.push({ player: activePlayer, type: 'half', change: prev - lp[activePlayer], result: lp[activePlayer] });
+      var prev = lp[1];
+      lp[1] = Math.floor(lp[1] / 2);
+      gameLog.push({ player: 1, type: 'half', change: prev - lp[1], result: lp[1] });
     } else {
-      var val = parseInt(document.getElementById('amount-input').value, 10);
-      if (isNaN(val)) return;
-      lp[activePlayer] = mode === 'add' ? lp[activePlayer] + val : lp[activePlayer] - val;
-      gameLog.push({ player: activePlayer, type: mode, change: val, result: lp[activePlayer] });
+      var val = parseInt(p1Input, 10);
+      if (!val) return;
+      lp[1] = mode === 'add' ? lp[1] + val : lp[1] - val;
+      gameLog.push({ player: 1, type: mode, change: val, result: lp[1] });
     }
-    renderLP(activePlayer);
+    renderLP(1);
     closeEditor();
   }
 
@@ -680,10 +695,6 @@
   function hideToast() {
     document.getElementById('toast-overlay').classList.remove('show');
   }
-
-  document.getElementById('amount-input').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !document.getElementById('confirm-btn').disabled) confirmEdit();
-  });
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function() {});
