@@ -697,59 +697,6 @@
   }
 
 
-  // ── SWIPE TO CLOSE ──
-  // Attach to a sheet element: dragging down (or up for p2) closes it
-  function addSwipeToClose(sheetId, closeFn, direction) {
-    // direction: 'down' for bottom sheets, 'up' for top sheet (p2)
-    var sheet = document.getElementById(sheetId);
-    var startY = 0;
-    var currentY = 0;
-    var dragging = false;
-
-    sheet.addEventListener('touchstart', function(e) {
-      startY = e.touches[0].clientY;
-      dragging = true;
-      sheet.style.transition = 'none';
-    }, { passive: true });
-
-    sheet.addEventListener('touchmove', function(e) {
-      if (!dragging) return;
-      currentY = e.touches[0].clientY;
-      var diff = currentY - startY;
-      if (direction === 'down' && diff > 0) {
-        sheet.style.transform = 'translateY(' + diff + 'px)';
-      } else if (direction === 'up' && diff < 0) {
-        sheet.style.transform = 'rotate(180deg) translateY(' + Math.abs(diff) + 'px)';
-      }
-    }, { passive: true });
-
-    sheet.addEventListener('touchend', function() {
-      if (!dragging) return;
-      dragging = false;
-      var diff = currentY - startY;
-      var threshold = 80;
-      var shouldClose = direction === 'down' ? diff > threshold : diff < -threshold;
-      sheet.style.transition = 'transform 0.25s ease';
-      if (shouldClose) {
-        sheet.style.transform = direction === 'down'
-          ? 'translateY(100%)'
-          : 'rotate(180deg) translateY(100%)';
-        setTimeout(function() {
-          closeFn();
-          sheet.style.transform = '';
-        }, 250);
-      } else {
-        sheet.style.transform = direction === 'down'
-          ? 'translateY(0)'
-          : 'rotate(180deg) translateY(0)';
-      }
-    }, { passive: true });
-  }
-
-  addSwipeToClose('sheet',    closeEditor,    'down');
-  addSwipeToClose('log-sheet', closeLog,      'down');
-  addSwipeToClose('sheet-p2', closeEditorP2,  'up');
-
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function() {});
   }
