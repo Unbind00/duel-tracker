@@ -274,23 +274,104 @@
     }
     .flash-p1 { animation: pulse-teal   0.5s ease; }
     .flash-p2 { animation: pulse-purple 0.5s ease; }
+
+    /* ════════════════════════════════════
+       PORTRAIT OVERRIDES
+       Sidebar on left, LP panels on right
+       ════════════════════════════════════ */
+    @media (orientation: portrait) {
+
+      /* App: sidebar left, panels right */
+      #app { flex-direction: row; }
+
+      /* Sidebar (the divider becomes a left vertical strip) */
+      .divider {
+        width: 120px; flex-shrink: 0;
+        border-left: none; border-right: 1px solid rgba(255,255,255,0.07);
+        border-top: none; border-bottom: none;
+        flex-direction: column; align-items: center; justify-content: center;
+        padding: 16px 0 16px 8px; gap: 0; height: 100%;
+      }
+      .divider-row {
+        flex-direction: column; align-items: center; gap: 8px;
+        padding: 12px 10px; width: 100%;
+      }
+      .divider-sep { width: 70%; height: 1px; }
+      .divider-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
+      .install-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
+      .reset-btn   { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
+
+      /* Right side: two panels stacked vertically */
+      #panels-right {
+        flex: 1; display: flex; flex-direction: column; height: 100%;
+      }
+
+      /* Panels take full height of their half */
+      .panel { flex: 1; }
+      .panel.p1 { background: linear-gradient(to top,    rgba(0,201,177,0.10), transparent); order: 2; }
+      .panel.p2 { background: linear-gradient(to bottom, rgba(155,93,229,0.10), transparent); order: 1; transform: none; }
+
+      /* Horizontal rule between the two player panels */
+      #panels-right .panel.p2 { border-bottom: 1px solid rgba(255,255,255,0.07); }
+
+      /* Center LP elements */
+      .panel { align-items: center; justify-content: center; }
+
+      /* Smaller LP for portrait */
+      .life-number { font-size: 64px; }
+      .life-btn { width: 220px; padding: 16px 28px; }
+      .life-hint { font-size: 10px; }
+      .defeated { font-size: 8px; }
+
+      /* Portrait edit sheets — both slide from bottom */
+      .overlay     { align-items: flex-end; justify-content: flex-start; }
+      .overlay-p2  { align-items: flex-end; justify-content: flex-start; }
+
+      .sheet {
+        width: 100%; max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        flex-direction: column;
+        transform: translateY(100%);
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 20px 20px 24px;
+      }
+      .overlay.open .sheet { transform: translateY(0); }
+
+      .sheet-p2 {
+        width: 100%; max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        flex-direction: column;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 20px 20px 24px;
+      }
+      .overlay-p2.open .sheet-p2 { transform: translateY(0); }
+
+      /* In portrait sheets use column layout: controls on top, numpad below */
+      .sheet-numpad-col {
+        width: 100%; padding: 0; background: transparent; margin-top: 12px;
+        order: 2;
+      }
+      .sheet-controls-col {
+        padding: 0; width: 100%;
+        order: 1;
+      }
+      .numpad-grid { gap: 8px; }
+      .numpad-key  { padding: 14px 0; font-size: 22px; }
+    }
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- Duelist 1 — LEFT -->
-  <div class="panel p1">
-    <span class="player-label">DUELIST 1</span>
-    <button class="life-btn" onclick="openEditor(1)">
-      <span class="life-number" id="lp1">8000</span>
-      <span class="life-hint">LP &middot; TAP TO EDIT</span>
-    </button>
-    <span class="defeated" id="dead1">&#x1F300; SENT TO THE SHADOW REALM</span>
-  </div>
-
-  <!-- Vertical Divider -->
+  <!-- Sidebar / Divider (left in portrait, center in landscape) -->
   <div class="divider">
     <div class="divider-row">
       <button class="divider-btn" onclick="rollDice()">&#x1F3B2; DICE ROLL</button>
@@ -306,14 +387,29 @@
     </div>
   </div>
 
-  <!-- Duelist 2 — RIGHT -->
-  <div class="panel p2">
-    <span class="player-label">DUELIST 2</span>
-    <button class="life-btn" onclick="openEditorP2()">
-      <span class="life-number" id="lp2">8000</span>
-      <span class="life-hint">LP &middot; TAP TO EDIT</span>
-    </button>
-    <span class="defeated" id="dead2">&#x1F300; SENT TO THE SHADOW REALM</span>
+  <!-- Panels wrapper (used in portrait to stack vertically on right) -->
+  <div id="panels-right">
+
+    <!-- Duelist 1 — LEFT in landscape, BOTTOM in portrait -->
+    <div class="panel p1">
+      <span class="player-label">DUELIST 1</span>
+      <button class="life-btn" onclick="openEditor(1)">
+        <span class="life-number" id="lp1">8000</span>
+        <span class="life-hint">LP &middot; TAP TO EDIT</span>
+      </button>
+      <span class="defeated" id="dead1">&#x1F300; SENT TO THE SHADOW REALM</span>
+    </div>
+
+    <!-- Duelist 2 — RIGHT in landscape, TOP in portrait -->
+    <div class="panel p2">
+      <span class="player-label">DUELIST 2</span>
+      <button class="life-btn" onclick="openEditorP2()">
+        <span class="life-number" id="lp2">8000</span>
+        <span class="life-hint">LP &middot; TAP TO EDIT</span>
+      </button>
+      <span class="defeated" id="dead2">&#x1F300; SENT TO THE SHADOW REALM</span>
+    </div>
+
   </div>
 
 </div>
@@ -362,7 +458,7 @@
     <div class="sheet-controls-col">
       <div class="sheet-handle" style="margin-bottom:16px;"></div>
       <div class="sheet-title-label" id="sheet-player-label">DUELIST 1</div>
-      <div class="sheet-title" style="margin-bottom:14px;">EDIT LIFE POINTS</div>
+      <div class="sheet-title" id="sheet-main-title" style="margin-bottom:14px;">EDIT DUELIST 1'S LIFE POINTS</div>
       <div class="mode-toggle">
         <button class="mode-btn active-sub" id="btn-sub"  onclick="setMode('sub')">- SUB</button>
         <button class="mode-btn"            id="btn-add"  onclick="setMode('add')">+ ADD</button>
@@ -385,7 +481,7 @@
     <div class="sheet-controls-col">
       <div class="sheet-handle" style="margin-bottom:16px;"></div>
       <div class="sheet-title-label" id="sheet-p2-label">DUELIST 2</div>
-      <div class="sheet-title" style="margin-bottom:14px;">EDIT LIFE POINTS</div>
+      <div class="sheet-title" style="margin-bottom:14px;">EDIT DUELIST 2'S LIFE POINTS</div>
       <div class="mode-toggle">
         <button class="mode-btn active-sub" id="p2-btn-sub"  onclick="setModeP2('sub')">- SUB</button>
         <button class="mode-btn"            id="p2-btn-add"  onclick="setModeP2('add')">+ ADD</button>
@@ -537,6 +633,7 @@
     p1Input = '';
     mode = 'sub';
     document.getElementById('sheet-player-label').textContent = 'DUELIST ' + player;
+    document.getElementById('sheet-main-title').textContent = 'EDIT DUELIST ' + player + '\'S LIFE POINTS';
     document.getElementById('p1-value').textContent = '0';
     document.getElementById('p1-preview').textContent = '';
     document.getElementById('confirm-btn').disabled = true;
