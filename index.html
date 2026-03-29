@@ -41,7 +41,7 @@
       display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 12px;
     }
     .divider-row + .divider-row {
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: none;
     }
     .divider-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
@@ -286,7 +286,7 @@
 
       /* Sidebar (the divider becomes a left vertical strip) */
       .divider {
-        width: 120px; flex-shrink: 0;
+        width: 124px; flex-shrink: 0;
         border-left: none; border-right: 1px solid rgba(255,255,255,0.07);
         border-top: none; border-bottom: none;
         flex-direction: column; align-items: center; justify-content: center;
@@ -296,10 +296,10 @@
         flex-direction: column; align-items: center; gap: 8px;
         padding: 12px 10px; width: 100%;
       }
-      .divider-sep { width: 70%; height: 1px; }
-      .divider-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
-      .install-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
-      .reset-btn   { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 90px; justify-content: center; }
+      .divider-sep { width: 100px; height: 1px; }
+      .divider-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 100px; justify-content: center; }
+      .install-btn { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 100px; justify-content: center; }
+      .reset-btn   { font-size: 9px; letter-spacing: 1px; padding: 0 8px; width: 100px; justify-content: center; }
 
       /* Right side: two panels stacked vertically */
       #panels-right {
@@ -380,6 +380,7 @@
       <span class="divider-sep"></span>
       <button class="divider-btn" onclick="openLog()">&#x1F4DC; DUEL LOG</button>
     </div>
+    <span class="divider-sep"></span>
     <div class="divider-row">
       <a class="install-btn" href="https://github.com/Unbind00/duel-tracker/blob/main/README.md" target="_blank" rel="noopener">&#x1F4F2; INSTALL</a>
       <span class="divider-sep"></span>
