@@ -138,7 +138,7 @@
     }
     .reset-modal-confirm:active { background: #cc3344; }
 
-    /* ── P1 SHEET — slides in from LEFT ── */
+    /* ── P1 SHEET — slides in from LEFT, numpad on left side ── */
     .overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
@@ -147,15 +147,15 @@
     }
     .overlay.open { opacity: 1; pointer-events: all; }
     .sheet {
-      background: #141414; border-radius: 0 24px 24px 0; width: 340px; max-width: 85vw;
-      padding: 24px 20px 24px;
+      background: #141414; border-radius: 0 24px 24px 0;
+      width: 560px; max-width: 92vw;
       transform: translateX(-100%); transition: transform 0.25s ease;
       border-right: 1px solid rgba(255,255,255,0.08);
-      display: flex; flex-direction: column; overflow-y: auto;
+      display: flex; flex-direction: row; overflow: hidden;
     }
     .overlay.open .sheet { transform: translateX(0); }
 
-    /* ── P2 SHEET — slides in from RIGHT ── */
+    /* ── P2 SHEET — slides in from RIGHT, numpad on right side ── */
     .overlay-p2 {
       position: fixed; inset: 0; background: rgba(0,0,0,0.7);
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
@@ -164,13 +164,24 @@
     }
     .overlay-p2.open { opacity: 1; pointer-events: all; }
     .sheet-p2 {
-      background: #141414; border-radius: 24px 0 0 24px; width: 340px; max-width: 85vw;
-      padding: 24px 20px 24px;
+      background: #141414; border-radius: 24px 0 0 24px;
+      width: 560px; max-width: 92vw;
       transform: translateX(100%); transition: transform 0.25s ease;
       border-left: 1px solid rgba(255,255,255,0.08);
-      display: flex; flex-direction: column; overflow-y: auto;
+      display: flex; flex-direction: row; overflow: hidden;
     }
     .overlay-p2.open .sheet-p2 { transform: translateX(0); }
+
+    /* ── SHEET INNER COLUMNS ── */
+    .sheet-numpad-col {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 20px 14px; gap: 6px; flex-shrink: 0; width: 200px;
+      background: rgba(0,0,0,0.2);
+    }
+    .sheet-controls-col {
+      flex: 1; display: flex; flex-direction: column; justify-content: center;
+      padding: 20px 18px; gap: 0;
+    }
 
     /* ── LOG SHEET — slides from bottom ── */
     .log-overlay {
@@ -232,7 +243,7 @@
     .numpad-sign { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; width: 24px; text-align: center; flex-shrink: 0; }
     .numpad-value { flex: 1; font-family: 'Rajdhani', sans-serif; font-size: 38px; font-weight: 700; color: #fff; text-align: center; min-width: 0; }
     .numpad-preview { text-align: center; font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 10px; height: 16px; letter-spacing: 1px; }
-    .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+    .numpad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .numpad-key {
       background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
       border-radius: 10px; padding: 12px 0;
@@ -327,70 +338,82 @@
   </div>
 </div>
 
-<!-- P1 Edit Sheet — slides from LEFT -->
+<!-- P1 Edit Sheet — slides from LEFT, numpad on outer (left) side -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title-label" id="sheet-player-label">DUELIST 1</div>
-    <div class="sheet-title">EDIT LIFE POINTS</div>
-    <div class="mode-toggle">
-      <button class="mode-btn active-sub" id="btn-sub"  onclick="setMode('sub')">- SUB</button>
-      <button class="mode-btn"            id="btn-add"  onclick="setMode('add')">+ ADD</button>
-      <button class="mode-btn"            id="btn-half" onclick="setMode('half')">1/2 HALF</button>
+    <!-- Numpad column (outer / left) -->
+    <div class="sheet-numpad-col">
+      <div class="numpad-grid" id="p1-grid">
+        <button class="numpad-key" onclick="numpadPressP1('7')">7</button>
+        <button class="numpad-key" onclick="numpadPressP1('8')">8</button>
+        <button class="numpad-key" onclick="numpadPressP1('9')">9</button>
+        <button class="numpad-key" onclick="numpadPressP1('4')">4</button>
+        <button class="numpad-key" onclick="numpadPressP1('5')">5</button>
+        <button class="numpad-key" onclick="numpadPressP1('6')">6</button>
+        <button class="numpad-key" onclick="numpadPressP1('1')">1</button>
+        <button class="numpad-key" onclick="numpadPressP1('2')">2</button>
+        <button class="numpad-key" onclick="numpadPressP1('3')">3</button>
+        <button class="numpad-key key-00" onclick="numpadPressP1('00')">00</button>
+        <button class="numpad-key" onclick="numpadPressP1('0')">0</button>
+        <button class="numpad-key key-del" onclick="numpadPressP1('del')">&#x232B;</button>
+      </div>
     </div>
-    <div class="numpad-display" id="p1-display">
-      <span class="numpad-sign sign-sub" id="p1-sign">-</span>
-      <span class="numpad-value" id="p1-value">0</span>
-    </div>
-    <div class="numpad-preview" id="p1-preview"></div>
-    <button class="confirm-btn" id="confirm-btn" onclick="confirmEdit()" disabled>CONFIRM</button>
-    <div class="numpad-grid" id="p1-grid">
-      <button class="numpad-key" onclick="numpadPressP1('7')">7</button>
-      <button class="numpad-key" onclick="numpadPressP1('8')">8</button>
-      <button class="numpad-key" onclick="numpadPressP1('9')">9</button>
-      <button class="numpad-key" onclick="numpadPressP1('4')">4</button>
-      <button class="numpad-key" onclick="numpadPressP1('5')">5</button>
-      <button class="numpad-key" onclick="numpadPressP1('6')">6</button>
-      <button class="numpad-key" onclick="numpadPressP1('1')">1</button>
-      <button class="numpad-key" onclick="numpadPressP1('2')">2</button>
-      <button class="numpad-key" onclick="numpadPressP1('3')">3</button>
-      <button class="numpad-key key-00" onclick="numpadPressP1('00')">00</button>
-      <button class="numpad-key" onclick="numpadPressP1('0')">0</button>
-      <button class="numpad-key key-del" onclick="numpadPressP1('del')">&#x232B;</button>
+    <!-- Controls column (inner / right) -->
+    <div class="sheet-controls-col">
+      <div class="sheet-handle" style="margin-bottom:16px;"></div>
+      <div class="sheet-title-label" id="sheet-player-label">DUELIST 1</div>
+      <div class="sheet-title" style="margin-bottom:14px;">EDIT LIFE POINTS</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active-sub" id="btn-sub"  onclick="setMode('sub')">- SUB</button>
+        <button class="mode-btn"            id="btn-add"  onclick="setMode('add')">+ ADD</button>
+        <button class="mode-btn"            id="btn-half" onclick="setMode('half')">1/2 HALF</button>
+      </div>
+      <div class="numpad-display" id="p1-display">
+        <span class="numpad-sign sign-sub" id="p1-sign">-</span>
+        <span class="numpad-value" id="p1-value">0</span>
+      </div>
+      <div class="numpad-preview" id="p1-preview"></div>
+      <button class="confirm-btn" id="confirm-btn" onclick="confirmEdit()" disabled style="margin-top:10px;">CONFIRM</button>
     </div>
   </div>
 </div>
 
-<!-- P2 Edit Sheet — slides from RIGHT -->
+<!-- P2 Edit Sheet — slides from RIGHT, numpad on outer (right) side -->
 <div class="overlay-p2" id="overlay-p2" onclick="handleP2OverlayClick(event)">
   <div class="sheet-p2" id="sheet-p2">
-    <div class="sheet-handle"></div>
-    <div class="sheet-title-label" id="sheet-p2-label">DUELIST 2</div>
-    <div class="sheet-title">EDIT LIFE POINTS</div>
-    <div class="mode-toggle">
-      <button class="mode-btn active-sub" id="p2-btn-sub"  onclick="setModeP2('sub')">- SUB</button>
-      <button class="mode-btn"            id="p2-btn-add"  onclick="setModeP2('add')">+ ADD</button>
-      <button class="mode-btn"            id="p2-btn-half" onclick="setModeP2('half')">1/2 HALF</button>
+    <!-- Controls column (inner / left) -->
+    <div class="sheet-controls-col">
+      <div class="sheet-handle" style="margin-bottom:16px;"></div>
+      <div class="sheet-title-label" id="sheet-p2-label">DUELIST 2</div>
+      <div class="sheet-title" style="margin-bottom:14px;">EDIT LIFE POINTS</div>
+      <div class="mode-toggle">
+        <button class="mode-btn active-sub" id="p2-btn-sub"  onclick="setModeP2('sub')">- SUB</button>
+        <button class="mode-btn"            id="p2-btn-add"  onclick="setModeP2('add')">+ ADD</button>
+        <button class="mode-btn"            id="p2-btn-half" onclick="setModeP2('half')">1/2 HALF</button>
+      </div>
+      <div class="numpad-display" id="p2-display">
+        <span class="numpad-sign sign-sub" id="p2-sign">-</span>
+        <span class="numpad-value" id="p2-value">0</span>
+      </div>
+      <div class="numpad-preview" id="p2-preview"></div>
+      <button class="confirm-btn" id="p2-confirm-btn" onclick="confirmEditP2()" disabled style="margin-top:10px;">CONFIRM</button>
     </div>
-    <div class="numpad-display" id="p2-display">
-      <span class="numpad-sign sign-sub" id="p2-sign">-</span>
-      <span class="numpad-value" id="p2-value">0</span>
-    </div>
-    <div class="numpad-preview" id="p2-preview"></div>
-    <button class="confirm-btn" id="p2-confirm-btn" onclick="confirmEditP2()" disabled>CONFIRM</button>
-    <div class="numpad-grid" id="p2-grid">
-      <button class="numpad-key" onclick="numpadPress('7')">7</button>
-      <button class="numpad-key" onclick="numpadPress('8')">8</button>
-      <button class="numpad-key" onclick="numpadPress('9')">9</button>
-      <button class="numpad-key" onclick="numpadPress('4')">4</button>
-      <button class="numpad-key" onclick="numpadPress('5')">5</button>
-      <button class="numpad-key" onclick="numpadPress('6')">6</button>
-      <button class="numpad-key" onclick="numpadPress('1')">1</button>
-      <button class="numpad-key" onclick="numpadPress('2')">2</button>
-      <button class="numpad-key" onclick="numpadPress('3')">3</button>
-      <button class="numpad-key key-00" onclick="numpadPress('00')">00</button>
-      <button class="numpad-key" onclick="numpadPress('0')">0</button>
-      <button class="numpad-key key-del" onclick="numpadPress('del')">&#x232B;</button>
+    <!-- Numpad column (outer / right) -->
+    <div class="sheet-numpad-col">
+      <div class="numpad-grid" id="p2-grid">
+        <button class="numpad-key" onclick="numpadPress('7')">7</button>
+        <button class="numpad-key" onclick="numpadPress('8')">8</button>
+        <button class="numpad-key" onclick="numpadPress('9')">9</button>
+        <button class="numpad-key" onclick="numpadPress('4')">4</button>
+        <button class="numpad-key" onclick="numpadPress('5')">5</button>
+        <button class="numpad-key" onclick="numpadPress('6')">6</button>
+        <button class="numpad-key" onclick="numpadPress('1')">1</button>
+        <button class="numpad-key" onclick="numpadPress('2')">2</button>
+        <button class="numpad-key" onclick="numpadPress('3')">3</button>
+        <button class="numpad-key key-00" onclick="numpadPress('00')">00</button>
+        <button class="numpad-key" onclick="numpadPress('0')">0</button>
+        <button class="numpad-key key-del" onclick="numpadPress('del')">&#x232B;</button>
+      </div>
     </div>
   </div>
 </div>
