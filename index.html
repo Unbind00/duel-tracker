@@ -77,9 +77,9 @@
     }
     .panel-action-btn {
       background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 10px; height: 43px; padding: 0 16px; cursor: pointer;
+      border-radius: 10px; height: 54px; padding: 0 20px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 1px;
+      font-family: 'Share Tech Mono', monospace; font-size: 26px; letter-spacing: 1px;
       color: #fff; transition: background 0.15s, color 0.15s; white-space: nowrap;
     }
     .panel-action-btn:active { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7); }
@@ -164,7 +164,7 @@
     .reset-modal-cancel {
       flex: 1; padding: 13px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.12);
       background: transparent; font-family: 'Share Tech Mono', monospace;
-      font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.15s;
+      font-size: 11px; letter-spacing: 2px; color: rgba(255,255,255,1); cursor: pointer; transition: all 0.15s;
     }
     .reset-modal-cancel:active { background: rgba(255,255,255,0.06); }
     .reset-modal-confirm {
@@ -238,24 +238,24 @@
     .log-empty { text-align: center; font-size: 11px; letter-spacing: 3px; color: rgba(255,255,255,0.2); padding: 32px 0; }
     .log-entry { display: flex; align-items: center; justify-content: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.05); gap: 8px; font-size: 12px; }
     .log-entry:last-child { border-bottom: none; }
-    .log-player { flex-shrink: 0; min-width: 68px; }
+    .log-player { width: 90px; text-align: center; font-weight: 700; font-family: 'Rajdhani', sans-serif; font-size: 15px; }
     .log-player.p1 { color: #00c9b1; }
     .log-player.p2 { color: #9b5de5; }
     .log-arrow  { color: rgba(255,255,255,0.2); flex-shrink: 0; }
-    .log-change { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; flex-shrink: 0; min-width: 52px; }
+    .log-change { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; width: 70px; text-align: center; }
     .log-change.sub  { color: #ff5566; }
     .log-change.add  { color: #33dd66; }
     .log-change.half { color: #ff5566; }
     .log-change.roll { color: #f0a500; }
     .log-change.flip { color: #f0a500; }
-    .log-result { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; color: #fff; }
+    .log-result { font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 700; color: #fff; width: 70px; text-align: center; }
 
     /* ── MODE TOGGLE ── */
     .mode-toggle { display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; margin-bottom: 16px; gap: 4px; }
     .mode-btn {
       flex: 1; padding: 8px 2px; border-radius: 9px; border: none;
-      font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.5px;
-      cursor: pointer; transition: all 0.18s ease; background: transparent; color: rgba(255,255,255,0.35);
+      font-family: 'Share Tech Mono', monospace; font-size: 14px; letter-spacing: 0.5px;
+      cursor: pointer; transition: all 0.18s ease; background: transparent; color: rgba(255,255,255,1);
     }
     .mode-btn.active-sub  { background: #ff5566; color: #000; }
     .mode-btn.active-add  { background: #33dd66; color: #000; }
@@ -282,8 +282,8 @@
       -webkit-user-select: none; user-select: none;
     }
     .numpad-key:active { background: rgba(255,255,255,0.18); }
-    .numpad-key.key-del { font-size: 16px; color: rgba(255,255,255,0.5); }
-    .numpad-key.key-00  { color: rgba(255,255,255,0.7); }
+    .numpad-key.key-del { font-size: 22px; color: rgba(255,255,255,1); }
+    .numpad-key.key-00  { color: rgba(255,255,255,1); }
     .confirm-btn {
       width: 100%; padding: 14px; border-radius: 14px; border: none;
       font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 3px;
@@ -326,27 +326,27 @@
       <span class="player-label">DUELIST 2</span>
       <button class="life-btn" onclick="openEditorP2()">
         <span class="life-number" id="lp2">8000</span>
-        <span class="life-hint">TAP TO EDIT</span>
+        <span class="life-hint" id="hint2">TAP TO EDIT</span>
       </button>
       <div class="panel-actions">
-        <button class="panel-action-btn" onclick="rollDice(2)">ROLL</button>
-        <button class="panel-action-btn" onclick="flipCoin(2)">FLIP</button>
-        <button class="panel-action-btn" onclick="openLogP2()">DUEL LOG</button>
+        <button class="panel-action-btn" onclick="rollDice(2)">&#x1F3B2;</button>
+        <button class="panel-action-btn" onclick="flipCoin(2)">&#x1FA99;</button>
+        <button class="panel-action-btn" onclick="openLogP2()">&#x1F4DC;</button>
       </div>
-      <span class="defeated" id="dead2">&#x1F300; SENT TO THE SHADOW REALM</span>
+      <span class="defeated" id="dead2" style="display:none;"></span>
     </div>
     <div class="panel p1">
       <span class="player-label">DUELIST 1</span>
       <button class="life-btn" onclick="openEditor(1)">
         <span class="life-number" id="lp1">8000</span>
-        <span class="life-hint">TAP TO EDIT</span>
+        <span class="life-hint" id="hint1">TAP TO EDIT</span>
       </button>
       <div class="panel-actions">
-        <button class="panel-action-btn" onclick="rollDice(1)">ROLL</button>
-        <button class="panel-action-btn" onclick="flipCoin(1)">FLIP</button>
-        <button class="panel-action-btn" onclick="openLog()">DUEL LOG</button>
+        <button class="panel-action-btn" onclick="rollDice(1)">&#x1F3B2;</button>
+        <button class="panel-action-btn" onclick="flipCoin(1)">&#x1FA99;</button>
+        <button class="panel-action-btn" onclick="openLog()">&#x1F4DC;</button>
       </div>
-      <span class="defeated" id="dead1">&#x1F300; SENT TO THE SHADOW REALM</span>
+      <span class="defeated" id="dead1" style="display:none;"></span>
     </div>
   </div>
 
@@ -392,7 +392,7 @@
     <div class="mode-toggle">
       <button class="mode-btn active-sub" id="btn-sub"  onclick="setMode('sub')">- SUB</button>
       <button class="mode-btn"            id="btn-add"  onclick="setMode('add')">+ ADD</button>
-      <button class="mode-btn"            id="btn-half" onclick="setMode('half')">1/2 HALF</button>
+      <button class="mode-btn"            id="btn-half" onclick="setMode('half')">&#xF7; HALF</button>
     </div>
     <div class="numpad-display" id="p1-display">
       <span class="numpad-sign sign-sub" id="p1-sign">-</span>
@@ -412,7 +412,7 @@
       <button class="numpad-key" onclick="numpadPressP1('3')">3</button>
       <button class="numpad-key key-00" onclick="numpadPressP1('00')">00</button>
       <button class="numpad-key" onclick="numpadPressP1('0')">0</button>
-      <button class="numpad-key key-del" onclick="numpadPressP1('del')">&#x232B;</button>
+      <button class="numpad-key key-del" onclick="numpadPressP1('del')">⌫</button>
     </div>
   </div>
 </div>
@@ -426,7 +426,7 @@
     <div class="mode-toggle">
       <button class="mode-btn active-sub" id="p2-btn-sub"  onclick="setModeP2('sub')">- SUB</button>
       <button class="mode-btn"            id="p2-btn-add"  onclick="setModeP2('add')">+ ADD</button>
-      <button class="mode-btn"            id="p2-btn-half" onclick="setModeP2('half')">1/2 HALF</button>
+      <button class="mode-btn"            id="p2-btn-half" onclick="setModeP2('half')">&#xF7; HALF</button>
     </div>
     <div class="numpad-display" id="p2-display">
       <span class="numpad-sign sign-sub" id="p2-sign">-</span>
@@ -446,7 +446,7 @@
       <button class="numpad-key" onclick="numpadPress('3')">3</button>
       <button class="numpad-key key-00" onclick="numpadPress('00')">00</button>
       <button class="numpad-key" onclick="numpadPress('0')">0</button>
-      <button class="numpad-key key-del" onclick="numpadPress('del')">&#x232B;</button>
+      <button class="numpad-key key-del" onclick="numpadPress('del')">⌫</button>
     </div>
   </div>
 </div>
@@ -510,12 +510,17 @@
     var display = document.getElementById('p2-display');
     var confirmBtn = document.getElementById('p2-confirm-btn');
     if (m === 'half') {
-      grid.style.display = 'none'; display.style.display = 'none';
+      grid.style.opacity = '0.3'; grid.style.pointerEvents = 'none';
+      display.style.opacity = '1'; display.style.pointerEvents = 'none';
+      sign.textContent = '\u00f7';
+      sign.className = 'numpad-sign sign-half';
+      document.getElementById('p2-value').textContent = '2';
       var result = Math.floor(lp[2] / 2);
       document.getElementById('p2-preview').textContent = lp[2].toLocaleString() + '  ->  ' + result.toLocaleString();
-      confirmBtn.disabled = false; confirmBtn.style.background = '#f0a500';
+      confirmBtn.disabled = false; confirmBtn.style.background = colors[2];
     } else {
-      grid.style.display = 'grid'; display.style.display = 'flex';
+      grid.style.opacity = '1'; grid.style.pointerEvents = '';
+      display.style.opacity = '1'; display.style.pointerEvents = '';
       sign.textContent = m === 'sub' ? '-' : '+';
       sign.className = 'numpad-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
       confirmBtn.style.background = colors[2];
@@ -579,12 +584,17 @@
     var display = document.getElementById('p1-display');
     var confirmBtn = document.getElementById('confirm-btn');
     if (m === 'half') {
-      grid.style.display = 'none'; display.style.display = 'none';
+      grid.style.opacity = '0.3'; grid.style.pointerEvents = 'none';
+      display.style.opacity = '1'; display.style.pointerEvents = 'none';
+      sign.textContent = '\u00f7';
+      sign.className = 'numpad-sign sign-half';
+      document.getElementById('p1-value').textContent = '2';
       var result = Math.floor(lp[1] / 2);
       document.getElementById('p1-preview').textContent = lp[1].toLocaleString() + '  ->  ' + result.toLocaleString();
-      confirmBtn.disabled = false; confirmBtn.style.background = '#f0a500';
+      confirmBtn.disabled = false; confirmBtn.style.background = colors[1];
     } else {
-      grid.style.display = 'grid'; display.style.display = 'flex';
+      grid.style.opacity = '1'; grid.style.pointerEvents = '';
+      display.style.opacity = '1'; display.style.pointerEvents = '';
       sign.textContent = m === 'sub' ? '-' : '+';
       sign.className = 'numpad-sign ' + (m === 'sub' ? 'sign-sub' : 'sign-add');
       confirmBtn.style.background = colors[1];
@@ -625,9 +635,15 @@
   function renderLP(player) {
     var el = document.getElementById('lp' + player);
     var deadEl = document.getElementById('dead' + player);
+    var hintEl = document.getElementById('hint' + player);
     el.textContent = lp[player].toLocaleString();
-    if (lp[player] <= 0) { el.classList.add('dead'); deadEl.classList.add('visible'); }
-    else { el.classList.remove('dead'); deadEl.classList.remove('visible'); }
+    if (lp[player] <= 0) {
+      el.classList.add('dead'); deadEl.classList.add('visible');
+      if (hintEl) hintEl.textContent = 'SENT TO THE SHADOW REALM';
+    } else {
+      el.classList.remove('dead'); deadEl.classList.remove('visible');
+      if (hintEl) hintEl.textContent = 'TAP TO EDIT';
+    }
     el.classList.remove('flash-p1', 'flash-p2');
     void el.offsetWidth;
     el.classList.add('flash-p' + player);
@@ -650,7 +666,7 @@
       div.className = 'log-entry';
       if (entry.type === 'roll' || entry.type === 'flip') {
         div.innerHTML =
-          '<span class="log-player p' + entry.player + '">Duelist ' + entry.player + '</span>' +
+          '<span class="log-player p' + entry.player + '">DUELIST ' + entry.player + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
           '<span class="log-change ' + entry.type + '">' + entry.label + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
@@ -660,7 +676,7 @@
           ? '\u00f72'
           : (entry.type === 'add' ? '+' : '-') + entry.change.toLocaleString();
         div.innerHTML =
-          '<span class="log-player p' + entry.player + '">Duelist ' + entry.player + '</span>' +
+          '<span class="log-player p' + entry.player + '">DUELIST ' + entry.player + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
           '<span class="log-change ' + entry.type + '">' + changeStr + '</span>' +
           '<span class="log-arrow">\u2192</span>' +
