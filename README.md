@@ -1,6 +1,6 @@
 # Duel Tracker
 
-A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and halving LP, plus a dice roller and coin flip.
+A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and halving LP, plus a dice roller, coin flip, and duel log.
 
 - No ads, ever
 - Works fully offline once installed
@@ -33,27 +33,56 @@ A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and hal
 
 ## How to Use
 
+The screen is split in two — Duelist 1 on the bottom, Duelist 2 on the top (rotated to face them). Each side is independent.
+
 - Tap either duelist's life point total to open the edit sheet
-- Choose **− SUB** to subtract, **+ ADD** to add, or **½ HALF** to halve their LP
-- Enter an amount and tap **Confirm**
-- Tap **🎲** to roll a dice or **🪙** to flip a coin
-- Tap **📜** to view the duel log
-- Tap **📲 INSTALL** for instructions on how to add the app to your home screen
-- Tap **↺ RESET** to restart both players at 8000 LP
+- Choose **− SUB** to subtract, **+ ADD** to add, or **÷ HALF** to halve their LP
+- Enter an amount using the numpad and tap **CONFIRM**
+- Tap **🎲** to roll a dice
+- Tap **🪙** to flip a coin
+- Tap **📜** to view the duel log for that duelist's side
+- Tap the **☰ menu button** in the centre of the screen for more options:
+  - **INSTALL** — instructions for adding the app to your home screen
+  - **RESET DUEL** — restarts both players at 8000 LP and clears the log
+
+---
+
+## Editing Life Points
+
+Tapping a duelist's LP total slides up (or down for Duelist 2) an edit sheet with three modes:
+
+- **− SUB** — subtract from the duelist's LP
+- **+ ADD** — add to the duelist's LP
+- **÷ HALF** — halve the duelist's LP (numpad dims; tap CONFIRM to apply)
+
+Use the numpad to enter an amount, then tap **CONFIRM**. The preview line shows what the resulting LP will be before you confirm.
+
+When a duelist reaches 0 LP, their card reads **SENT TO THE SHADOW REALM**.
+
+---
+
+## Dice & Coin
+
+Each duelist has their own 🎲 and 🪙 buttons. The result appears as a card in the centre of the screen, readable by both players — one side is rotated 180° for the duelist on the opposite end. Tap anywhere to dismiss.
+
+Results are recorded in the duel log under the duelist who triggered them.
 
 ---
 
 ## Duel Log
 
-The **📜** button in the middle of the screen opens a running log of every life point change made during the current duel. Each entry shows the player, what happened, and the resulting LP total:
+The **📜** button opens a running log of every life point change, dice roll, and coin flip made during the current duel. Each entry shows the player, what happened, and the result:
 
 ```
-Duelist 1 → -2000 → 6000
-Duelist 2 → ÷2 → 4000
-Duelist 1 → +500 → 6500
+DUELIST 1 → -2000 → 6000
+DUELIST 2 → ÷2    → 4000
+DUELIST 1 → +500  → 6500
+DUELIST 2 → ROLL  → THREE
+DUELIST 1 → FLIP  → HEADS
 ```
 
 - Subtractions and halves are shown in **red**
 - Additions are shown in **green**
+- Dice rolls and coin flips are shown in **amber**
 - The log is ordered newest first
-- Tapping **↺ RESET** clears the log along with both players' LP
+- Tapping **RESET DUEL** clears the log along with both players' LP
