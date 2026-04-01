@@ -35,15 +35,13 @@ A two-player Yu-Gi-Oh! life point tracker. Supports adding, subtracting, and hal
 
 The screen is split in two — Duelist 1 on the bottom, Duelist 2 on the top (rotated to face them). Each side is independent.
 
-- Tap either duelist's life point total to open the edit sheet
-- Choose **− SUB** to subtract, **+ ADD** to add, or **÷ HALF** to halve their LP
-- Enter an amount using the numpad and tap **CONFIRM**
+- Tap either duelist's life point total to open their LP edit sheet
 - Tap **🎲** to roll a dice
 - Tap **🪙** to flip a coin
-- Tap **📜** to view the duel log for that duelist's side
+- Tap **📜** to view the duel log for that duelist's point of view
 - Tap the **☰ menu button** in the centre of the screen for more options:
   - **INSTALL** — instructions for adding the app to your home screen
-  - **RESET DUEL** — restarts both players at 8000 LP and clears the log
+  - **RESET DUEL** — restarts both players at 8000 LP and clears the duel log
 
 ---
 
